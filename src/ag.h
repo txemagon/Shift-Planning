@@ -25,21 +25,20 @@
 #define		SW	5	/* Recommended shift week */
 #define		SN	4	/* Recommended staff number */
 #define		SNW	3	/* Recommended staff number on weekends */
-#define		WL	37.5	/* Recommended work load in hours/week  */
+#define		WL	375	/* Recommended work load in tenths of an hour/week  */
+#define		SL	70	/* Given shift length in tenths of an hour  */
 
-#define		SWP	1	/* Punish extra day with <SWP> penalty points */
-#define		HWP	3	/* Punish halving a weekend with <HWP> penalty points */
-#define		BW	3	/* Punish weekend injustice with <BW> penalty points */
-#define		BCW	2	/* Punish consecutive weekends injustice with <BCW> penalty points */
+#define		SWP	2	/* Punish extra day with <SWP> penalty points */
+#define		HWP	5	/* Punish halving a weekend with <HWP> penalty points */
+#define		BW	2	/* Punish weekend injustice with <BW> penalty points */
+#define		BCW	4	/* Punish consecutive weekends injustice with <BCW> penalty points */
 #define		BFD	1	/* Punish different number of free days with <BFD> penalty points */
-#define		FP	25	/* Punish few people with <FP> penalty points */
-#define		EP	20	/* Punish extra people with <EP> penalty points */
+#define		FP	3	/* Punish few people with <FP> penalty points */
+#define		EP	4	/* Punish extra people with <EP> penalty points */
 #define		WLP	1	/* Punish differences in work rate  */
 
-
-#define		SATURDAY	5	/* Monday = 0 */
-#define		WEEK    	7	/* Number of days in a week */
-
+enum TWorking
+{ working, off_work };
 
 struct Summary
 {

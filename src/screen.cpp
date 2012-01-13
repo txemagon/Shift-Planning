@@ -18,8 +18,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ag.h"
+#include "manage_time.h"
 #include "gene.h"
 #include "allele.h"
 #include "chromosomal.h"
@@ -87,17 +89,16 @@ punish_long_shifts (Chromosome chromo, unsigned worker)
 unsigned
 punish_work_load (Chromosome chromo, unsigned worker)
 {
-  unsigned penalty = 0;
-  unsigned worked = 0;
+   unsigned penalty = 0;
+   unsigned worked = 0;
 
-  worker %= chromo.width;
-  for (unsigned week = 0; week < chromo.length; week++)
-    for (unsigned day = 0; day < WEEK; day++)
+   worker %= chromo.width;
+   for (unsigned day = 0; day < chromo.length; day++)
       if (is_working (chromo.gene[day], worker))
-	worked++;
-  penalty = (unsigned) (abs (worked - WL * WEEK)) * WLP;
+	 worked++;
+   penalty = (unsigned) (abs (worked - WL * chromo.length / WEEK / SL)) * WLP;
 
-  return penalty;
+   return penalty;
 }				/* -----  end of function punish_work_load  ----- */
 
 /* 
@@ -106,18 +107,18 @@ punish_work_load (Chromosome chromo, unsigned worker)
  *  Description:  It is undesirable to work only one day in the weekend.  
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_halving_weekends (Chromosome chromo, unsigned worker)
 {
-  unsigned penalty = 0;
-  worker %= chromo.width;
+   unsigned penalty = 0;
+   worker %= chromo.width;
 
-  for (unsigned day = SATURDAY; day + 1 < chromo.length; day += WEEK)
-    penalty +=
-      (is_working (chromo.gene[day], worker) ^
-       is_working (chromo.gene[day + 1], worker)) * HWP;
+   for (unsigned day = SATURDAY; day + 1 < chromo.length; day += WEEK)
+      penalty +=
+	 (is_working (chromo.gene[day], worker) ^
+	  is_working (chromo.gene[day + 1], worker)) * HWP;
 
-  return penalty;
+   return penalty;
 }				/* -----  end of function punish_halving_weekends  ----- */
 
 /* 
@@ -126,20 +127,30 @@ punish_halving_weekends (Chromosome chromo, unsigned worker)
  *  Description:  It is very bad to work two weekends together. 
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_consecutive_weekends (Chromosome chromo, unsigned worker)
 {
-  unsigned penalty = 0;
-  worker %= chromo.width;
+   unsigned acum = 0;
+   unsigned penalty = 0;
+   worker %= chromo.width;
 
-  for (int day = SATURDAY + WEEK; day + 1 < chromo.length; day += WEEK)
-    if ((is_working (chromo.gene[day], worker)
-	 || is_working (chromo.gene[day + 1], worker))
-	&& (is_working (chromo.gene[day - WEEK], worker)
-	    || is_working (chromo.gene[day + 1 - WEEK], worker)))
-      penalty += BCW;
+   for (int day = SATURDAY; day + 1 < chromo.length; day += WEEK)
+   {
+      if (!is_working_the_weekend (chromo, worker, day / WEEK)){
+	 penalty += acum;
+	 acum = 0;
+      } else if (!acum)
+	 acum = 1;
+      else
+	 acum *= BCW;
 
-  return penalty;
+   }
+
+   /* Add the final acum */
+   if (acum > 1)
+      penalty += acum;
+
+   return penalty;
 }				/* -----  end of function punish consecutive_weekends ----- */
 
 /* 
@@ -148,22 +159,22 @@ punish_consecutive_weekends (Chromosome chromo, unsigned worker)
  *  Description:  Punish low or high number of employees working
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_bad_staff_number (Chromosome chromo)
 {
-  unsigned penalty = 0;
-  for (int day = 0; day < chromo.length; day++)
-    {
+   unsigned penalty = 0;
+   for (int day = 0; day < chromo.length; day++)
+   {
       unsigned pw = people_working (chromo.gene[day]);
       unsigned staff = SN;
       if (day % WEEK == SATURDAY || day % WEEK == SATURDAY + 1)
-	staff = SNW;
+	 staff = SNW;
       if (pw < staff)
-	penalty += FP;
+	 penalty += FP;
       if (pw > staff)
-	penalty += EP;
-    }
-  return penalty;
+	 penalty += EP;
+   }
+   return penalty;
 }				/* -----  end of function punish_bad_stuff_number  ----- */
 
 /* 
@@ -172,30 +183,33 @@ punish_bad_staff_number (Chromosome chromo)
  *  Description:  computes the number of free_days for each employee and punishes diffs.  
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_different_free_days (Chromosome chromo)
 {
-  unsigned penalty = 0;
-  unsigned *freedays = (unsigned *) malloc (chromo.width * sizeof (unsigned));
-  unsigned min = 0xFFFFFFFF;
+
+   unsigned penalty = 0;
+   unsigned *freedays = (unsigned *) malloc (chromo.width * sizeof (unsigned));
+   memset(freedays, 0, chromo.width * sizeof (unsigned));
+   unsigned min = 0xFFFFFFFF;
 
 
-  for (int worker = 0; worker < chromo.width; worker++)
-    freedays[worker] = 0;
+   for (int worker = 0; worker < chromo.width; worker++)
+      freedays[worker] = 0;
 
-  for (int day = 0; day < chromo.length; day++)
-    for (int worker = 0; worker < chromo.width; worker++)
-      if (!is_working (chromo.gene[day], worker))
-	freedays[worker]++;
-
-  for (int worker = 0; worker < chromo.width; worker++)
-    if (min > freedays[worker])
-
+   for (int day = 0; day < chromo.length; day++)
       for (int worker = 0; worker < chromo.width; worker++)
-	penalty += (freedays[worker] - min) * BFD;
+	 if (!is_working (chromo.gene[day], worker))
+	    freedays[worker]++;
 
-  free (freedays);
-  return penalty;
+   for (int worker = 0; worker < chromo.width; worker++)
+      if (min > freedays[worker])
+	 min = freedays[worker];
+
+   for (int worker = 0; worker < chromo.width; worker++)
+      penalty += (freedays[worker] - min) * BFD;
+
+   free (freedays);
+   return penalty;
 }				/* -----  end of function punish_different_weekend_number  ----- */
 
 
@@ -205,36 +219,33 @@ punish_different_free_days (Chromosome chromo)
  *  Description:  computes the number of weekend for each employee and punishes diffs.  
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_different_weekend_number (Chromosome chromo)
 {
-  unsigned penalty = 0;
-  unsigned *weekends = (unsigned *) malloc (chromo.width * sizeof (unsigned));
-  unsigned min = 0;
+   unsigned penalty = 0;
+   unsigned *weekends = (unsigned *) malloc (chromo.width * sizeof (unsigned));
+   memset(weekends, 0, chromo.width * sizeof (unsigned));
+   unsigned min = 0xFFFFFFFF;
 
 
-  for (int worker = 0; worker < chromo.width; worker++)
-    weekends[worker] = 0;
+   for (int worker = 0; worker < chromo.width; worker++)
+      weekends[worker] = 0;
 
-  for (int day = SATURDAY; day + 1 < chromo.length; day += WEEK)
-    for (int worker = 0; worker < chromo.width; worker++)
-      {
-	if (!is_working (chromo.gene[day], worker))
-	  weekends[worker]++;
-	if (!is_working (chromo.gene[day + 1], worker))
-	  weekends[worker]++;
-      }
+   for (int day = SATURDAY; day + 1 < chromo.length; day += WEEK)
+      for (int worker = 0; worker < chromo.width; worker++)
+	 if (!is_working_the_weekend (chromo, worker, day/WEEK))
+	    weekends[worker]++;
 
-  for (int worker = 0; worker < chromo.width; worker++)
-    if (min > weekends[worker])
-      min = weekends[worker];
+   for (int worker = 0; worker < chromo.width; worker++)
+      if (min > weekends[worker])
+	 min = weekends[worker];
 
-  for (int worker = 0; worker < chromo.width; worker++)
-    penalty += BW * (weekends[worker] - min);
+   for (int worker = 0; worker < chromo.width; worker++)
+      penalty += BW * (weekends[worker] - min);
 
 
-  free (weekends);
-  return penalty;
+   free (weekends);
+   return penalty;
 }				/* -----  end of function punish_different_weekend_number  ----- */
 
 /* 
@@ -243,30 +254,30 @@ punish_different_weekend_number (Chromosome chromo)
  *  Description:  Sum penalties up
  * =====================================================================================
  */
-void
+   void
 check_aptitude (Population population)
 {
-  for (int i = 0; i < population.length; i++)
-    {
+   for (int i = 0; i < population.length; i++)
+   {
       population.person[i].penalty_sum =
-	punish_bad_staff_number (population.person[i]);
+	 punish_bad_staff_number (population.person[i]);
       population.person[i].penalty_sum +=
-	punish_different_weekend_number (population.person[i]);
+	 punish_different_weekend_number (population.person[i]);
       population.person[i].penalty_sum +=
-	punish_different_free_days (population.person[i]);
+	 punish_different_free_days (population.person[i]);
       for (int w = 0; w < population.person[i].width; w++)
-	{
-	  population.person[i].penalty_sum +=
+      {
+	 population.person[i].penalty_sum +=
 	    punish_long_shifts (population.person[i], w);
-	  population.person[i].penalty_sum +=
+	 population.person[i].penalty_sum +=
 	    punish_halving_weekends (population.person[i], w);
-	  population.person[i].penalty_sum +=
+	 population.person[i].penalty_sum +=
 	    punish_consecutive_weekends (population.person[i], w);
-	  population.person[i].penalty_sum +=
+	 population.person[i].penalty_sum +=
 	    punish_work_load (population.person[i], w);
 
-	}
-    }
+      }
+   }
 }				/* -----  end of function check_long_shifts  ----- */
 
 /* 
@@ -275,30 +286,28 @@ check_aptitude (Population population)
  *  Description:  Annotate penalties
  * =====================================================================================
  */
-void
+   void
 analyze_aptitude (Chromosome * chromo)
 {
-  chromo->penalty_sum =
-    chromo->summary.bad_staff_number = punish_bad_staff_number (*chromo);
-  chromo->penalty_sum +=
-    chromo->summary.different_weekend_number =
-    punish_different_weekend_number (*chromo);
-  chromo->penalty_sum +=
-    chromo->summary.different_free_days =
-    punish_different_free_days (*chromo);
-  for (int w = 0; w < chromo->width; w++)
-    {
+   chromo->penalty_sum =
+      chromo->summary.bad_staff_number = punish_bad_staff_number (*chromo);
+   chromo->penalty_sum +=
+      chromo->summary.different_weekend_number =
+      punish_different_weekend_number (*chromo);
+   chromo->penalty_sum +=
+      chromo->summary.different_free_days =
+      punish_different_free_days (*chromo);
+   for (int w = 0; w < chromo->width; w++)
+   {
       chromo->penalty_sum +=
-	chromo->summary.long_shifts[w] = punish_long_shifts (*chromo, w);
+	 chromo->summary.long_shifts[w] = punish_long_shifts (*chromo, w);
       chromo->penalty_sum +=
-	chromo->summary.weekends_halved[w] =
-	punish_halving_weekends (*chromo, w);
+	 chromo->summary.weekends_halved[w] =
+	 punish_halving_weekends (*chromo, w);
       chromo->penalty_sum +=
-	chromo->summary.consecutive_weekends[w] =
-	punish_consecutive_weekends (*chromo, w);
+	 chromo->summary.consecutive_weekends[w] =
+	 punish_consecutive_weekends (*chromo, w);
       chromo->summary.weekends[w] = get_total_weekends (*chromo, w);
       chromo->summary.freedays[w] = get_total_freedays (*chromo, w);
-
-
-    }
+   }
 }

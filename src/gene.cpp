@@ -122,3 +122,38 @@ random_gene (unsigned workers, unsigned ones)
 
   return gene;
 }				/* -----  end of function random_gene  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  set_worker
+ *  Description:  Sets the value for a given worker. 
+ * =====================================================================================
+ */
+unsigned
+set_worker (unsigned gene, unsigned worker, enum TWorking value)
+{
+  if (value == working)
+    gene |= (1 << worker);
+  else
+    gene &= ~(1 << worker);
+
+  return gene;
+}				/* -----  end of function set_worker  ----- */
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  xchg_workers
+ *  Description:  exchange the value of two workers inside a gene.
+ * =====================================================================================
+ */
+unsigned
+xchg_workers (unsigned gene, unsigned worker1, unsigned worker2)
+{
+  bool is_working1 = is_working (gene, worker1);
+  gene =
+    set_worker (gene, worker1, (enum TWorking) is_working (gene, worker2));
+  gene = set_worker (gene, worker2, (enum TWorking) is_working1);
+
+  return gene;
+}				/* -----  end of function xchg_workers  ----- */

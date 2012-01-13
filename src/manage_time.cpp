@@ -32,3 +32,20 @@ get_day (int day_of_week)
 {
   return day_of_week - first_day_of_week;
 }				/* -----  end of function get_day  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  the_next_wekend_as_of
+ *  Description:  return the number of day of the next saturday. -1 when exceeding time
+ *                limits.
+ * =====================================================================================
+ */
+   int
+the_next_wekend_as_of (unsigned day, unsigned max)
+{
+   unsigned week = day / week; 
+   day  = week * WEEK + SATURDAY;
+   if (day >= max)
+      day = -1;
+   return day;
+}		/* -----  end of function the_next_wekend_as_of  ----- */

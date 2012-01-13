@@ -12,3 +12,6 @@ enum WeekDay
 { monday, tuesday, wednesday, thursday, friday, saturday, sunday };
 
 extern enum WeekDay first_day_of_week;
+
+int get_day (int day_of_week);
+int the_next_wekend_as_of (unsigned day, unsigned max);

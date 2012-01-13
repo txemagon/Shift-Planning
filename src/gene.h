@@ -26,5 +26,7 @@ unsigned random_gene (unsigned workers, unsigned ones);
 unsigned rotate_gene (unsigned gene, int places, unsigned width);
 unsigned is_working (unsigned gene, unsigned worker);
 unsigned people_working (unsigned gene);
+unsigned set_worker (unsigned gene, unsigned worker, enum TWorking value);
+unsigned xchg_workers (unsigned gene, unsigned worker1, unsigned worker2);
 
 #endif /* ----- #ifndef GENE_H  ----- */

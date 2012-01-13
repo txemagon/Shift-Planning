@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include "ag.h"
+#include "manage_time.h"
 #include "chromosomal.h"
 #include "gene.h"
 #include "allele.h"
@@ -30,8 +31,8 @@
 /* Command line default options */
 #define	WORKERS 	5	/* Number of workers to plan  */
 #define	PERIOD		(5 * WEEK)	/* Number of days to plan  */
-#define	POPULATION	600	/* Number of solucion in each generation */
-#define	GENERATIONS	49999	/* Number of generations to compute */
+#define	POPULATION	300	/* Number of solucion in each generation */
+#define	GENERATIONS	22984	/* Number of generations to compute */
 
 Population population;
 bool exit_request = false;
@@ -73,6 +74,8 @@ main (int argc, char *argv[])
 	    unsigned s = 1 + rand () % (population.length - 1);
 	    mutation_gene (population.person[s],
 			   rand () % population.person[s].length);
+	    random_wknd_gene (population.person[s],
+			   rand () % population.person[s].length);
 	  }
 
       // Mutate thru rotation 
@@ -90,12 +93,12 @@ main (int argc, char *argv[])
       max_times = rand () % POPULATION / 4;
       for (unsigned times = 0; times < max_times; times++)
 	{
-	  random_shift (population.
-			person[1 + rand () % (population.length - 1)]);
+	  random_shift (population.person
+			[1 + rand () % (population.length - 1)]);
 	  cross (population.person[1 + rand () % (population.length - 1)],
 		 population.person[1 + rand () % (population.length - 1)]);
-	  interchain (population.
-		      person[1 + rand () % (population.length - 1)]);
+	  interchain (population.person
+		      [1 + rand () % (population.length - 1)]);
 	}
 
 
