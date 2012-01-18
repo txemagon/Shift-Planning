@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include "ag.h"
+#include "globals.h"
 #include "manage_time.h"
 #include "gene.h"
 #include "allele.h"
@@ -87,7 +88,7 @@ display_penalties (Chromosome chromo)
       totals[FREEDAY_PENAL] += chromo.summary.freedays[w];
       worked = chromo.length - chromo.summary.freedays[w];
       printf ("Worked days: %u\n", worked);
-      printf ("Work Load Rate: %.2lf\n", (double) (worked)  * WEEK / chromo.length / WL * SL);
+      printf ("Work Load Rate: %.2lf\n", (double) (worked)  * WEEK / chromo.length / goals[work_load_idx].value * problem[shift_length_idx].value);
     }
 
   printf ("\nTOTALS\n");
@@ -140,7 +141,9 @@ init_chromosome (unsigned workers, unsigned period)
       chromo.gene[i] =
 	 random_gene (chromo.width,
 	       (i % WEEK == SATURDAY
-		|| i % WEEK == SATURDAY + 1) ? SN : SNW);
+		|| i % WEEK == SATURDAY + 1) ? 
+	       goals[staff_number_ix].value : 
+	       goals[staff_weekend_number_idx].value);
 
    return chromo;
 }				/* -----  end of function init_chromosome  ----- */
@@ -244,9 +247,9 @@ fix_staff (Population population)
    for (int i = 0; i < population.length; i++)
       for (int j = 0; j < population.person[i].length; j++)
       {
-	 int expected_staff = SN;
+	 int expected_staff = goals[staff_number_ix].value;
 	 if (j % WEEK == SATURDAY || j % WEEK == SATURDAY + 1)
-	    expected_staff = SNW;
+	    expected_staff = goals[staff_weekend_number_idx].value;
 	 if (expected_staff != people_working (population.person[i].gene[j]))
 	    population.person[i].gene[j] =
 	       random_gene (population.person[i].width, expected_staff);
@@ -285,61 +288,3 @@ cross (Chromosome chromo1, Chromosome chromo2)
 }				/* -----  end of function cross  ----- */
 
 
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  random_shift
- *  Description:  Changes the shift from one person to another.
- * =====================================================================================
- */
-   void
-random_shift (Chromosome chromo)
-{
-   unsigned start;
-   unsigned length;
-   int rotations = rand () % (2 * chromo.width);
-   start = rand () % (chromo.length / WEEK);
-   start *= WEEK;
-   length = rand () % (chromo.length - start);
-   length = WEEK;
-
-   for (unsigned g = start; g < start + length; g++)
-      chromo.gene[g] = rotate_gene (chromo.gene[g], rotations, chromo.width);
-
-}				/* -----  end of function cross  ----- */
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  interchain
- *  Description:  Changes one whole week inside a single solution (chromosome)
- * =====================================================================================
- */
-   void
-interchain (Chromosome chromo)
-{
-   unsigned start1, start2;
-   unsigned worker1, worker2;
-   unsigned buffer = 0;
-   unsigned mask1 = 0, mask2 = 0;
-
-   start1 = rand () % chromo.length / WEEK;
-   start2 = rand () % chromo.length / WEEK;
-   start1 *= WEEK;
-   start2 *= WEEK;
-   worker1 = rand () % chromo.width;
-   worker2 = rand () % chromo.width;
-
-   mask1 = 1 << worker1;
-   mask2 = 1 << worker2;
-
-   for (unsigned day = 0; day < WEEK; day++)
-   {
-      buffer <<= 1;
-      buffer |= ! !(chromo.gene[start1 + day] & mask1);
-      chromo.gene[start1 + day] &= (~mask1);
-      chromo.gene[start1 + day] |=
-	 (! !(mask2 & chromo.gene[start2 + day]) << worker1);
-      chromo.gene[start2 + day] &= 0xFFFFFFFF ^ (1 << worker2);
-      chromo.gene[start2 + day] |= (buffer & 1) << worker2;
-   }
-
-}				/* -----  end of function interchain  ----- */

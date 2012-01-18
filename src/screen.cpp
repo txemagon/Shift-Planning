@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "ag.h"
+#include "globals.h"
 #include "manage_time.h"
 #include "gene.h"
 #include "allele.h"
@@ -62,6 +63,7 @@ unsigned
 punish_long_shifts (Chromosome chromo, unsigned worker)
 {
   unsigned penalty = 0;
+  unsigned acum = 0;
   unsigned together = 0;
   worker %= chromo.width;
 
@@ -69,11 +71,15 @@ punish_long_shifts (Chromosome chromo, unsigned worker)
     if (is_working (chromo.gene[day], worker))
       {
 	together++;
-	if (together > SW)
-	  penalty += SWP;
+	if (together > goals[shift_week_idx].value)
+	   acum += penalty_points[shift_week_extra_penalty_idx].value;
       }
-    else
-      together = 0;
+    else{
+       if (together > goals[shift_week_idx].value )
+	  penalty += acum;
+       together = 0;
+       acum = 0;
+    }
 
   return penalty;
 }				/* -----  end of function punish_long_shifts  ----- */
@@ -86,7 +92,7 @@ punish_long_shifts (Chromosome chromo, unsigned worker)
  *  Description: Punish low work load or high one 
  * =====================================================================================
  */
-unsigned
+   unsigned
 punish_work_load (Chromosome chromo, unsigned worker)
 {
    unsigned penalty = 0;
@@ -96,7 +102,8 @@ punish_work_load (Chromosome chromo, unsigned worker)
    for (unsigned day = 0; day < chromo.length; day++)
       if (is_working (chromo.gene[day], worker))
 	 worked++;
-   penalty = (unsigned) (abs (worked - WL * chromo.length / WEEK / SL)) * WLP;
+   penalty = (unsigned) (abs (worked - 
+	    goals[work_load_idx].value * chromo.length / WEEK / problem[shift_length_idx].value)) * penalty_points[work_load_idx].value;
 
    return penalty;
 }				/* -----  end of function punish_work_load  ----- */
@@ -116,7 +123,7 @@ punish_halving_weekends (Chromosome chromo, unsigned worker)
    for (unsigned day = SATURDAY; day + 1 < chromo.length; day += WEEK)
       penalty +=
 	 (is_working (chromo.gene[day], worker) ^
-	  is_working (chromo.gene[day + 1], worker)) * HWP;
+	  is_working (chromo.gene[day + 1], worker)) * penalty_points[halving_weekend_penalty_idx].value;
 
    return penalty;
 }				/* -----  end of function punish_halving_weekends  ----- */
@@ -142,7 +149,7 @@ punish_consecutive_weekends (Chromosome chromo, unsigned worker)
       } else if (!acum)
 	 acum = 1;
       else
-	 acum *= BCW;
+	 acum *= penalty_points[consecutive_weekend_injustice_idx].value;
 
    }
 
@@ -166,13 +173,13 @@ punish_bad_staff_number (Chromosome chromo)
    for (int day = 0; day < chromo.length; day++)
    {
       unsigned pw = people_working (chromo.gene[day]);
-      unsigned staff = SN;
+      unsigned staff = goals[staff_number_ix].value;
       if (day % WEEK == SATURDAY || day % WEEK == SATURDAY + 1)
-	 staff = SNW;
+	 staff = goals[staff_weekend_number_idx].value;
       if (pw < staff)
-	 penalty += FP;
+	 penalty += penalty_points[few_people_penalty_idx].value;
       if (pw > staff)
-	 penalty += EP;
+	 penalty += penalty_points[extra_people_penalty_idx].value;
    }
    return penalty;
 }				/* -----  end of function punish_bad_stuff_number  ----- */
@@ -206,7 +213,7 @@ punish_different_free_days (Chromosome chromo)
 	 min = freedays[worker];
 
    for (int worker = 0; worker < chromo.width; worker++)
-      penalty += (freedays[worker] - min) * BFD;
+      penalty += (freedays[worker] - min) * penalty_points[bad_free_days_penalty_idx].value;
 
    free (freedays);
    return penalty;
@@ -241,7 +248,7 @@ punish_different_weekend_number (Chromosome chromo)
 	 min = weekends[worker];
 
    for (int worker = 0; worker < chromo.width; worker++)
-      penalty += BW * (weekends[worker] - min);
+      penalty += penalty_points[weekend_injustice_penalty_idx].value * (weekends[worker] - min);
 
 
    free (weekends);

@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include "ag.h"
+#include "globals.h"
 #include "mutation_controller_private.h"
 #include "manage_time.h"
 #include "chromosomal.h"
@@ -64,7 +65,7 @@ mutate_generation ( Population population )
       {
 	 for (unsigned times = 0; times < 20 - b && position < population.length; times++, position++){
 	    copy (population, position, b);
-	    if (rand() % CROSS_RATE == 1)
+	    if (rand() % inner_working[cross_rate_idx].value == 1)
 	       cross(population.person[position], population.person[ 1 + rand() % (position - 1)]);
 	 }
       }

@@ -19,6 +19,7 @@
 #ifndef  AG_H
 #define  AG_H
 
+#include "manage_time.h"
 
 #define		PAUSE	8	/* Pause after writing status */
 
@@ -28,7 +29,8 @@
 #define		WL	375	/* Recommended work load in tenths of an hour/week  */
 #define		SL	70	/* Given shift length in tenths of an hour  */
 
-#define		SWP	2	/* Punish extra day with <SWP> penalty points */
+#define		SWEP	4	/* Punish extra day with <SWP> penalty points */
+#define		SWDP	1	/* Punish minus day with <SWP> penalty points */
 #define		HWP	5	/* Punish halving a weekend with <HWP> penalty points */
 #define		BW	2	/* Punish weekend injustice with <BW> penalty points */
 #define		BCW	4	/* Punish consecutive weekends injustice with <BCW> penalty points */
@@ -36,6 +38,37 @@
 #define		FP	3	/* Punish few people with <FP> penalty points */
 #define		EP	4	/* Punish extra people with <EP> penalty points */
 #define		WLP	1	/* Punish differences in work rate  */
+
+/* Command line default options */
+#define	WORKERS 	5	/* Number of workers to plan  */
+#define	PERIOD		(5 * WEEK)	/* Number of days to plan  */
+#define	POPULATION	500	/* Number of solucion in each generation */
+
+#define	CROSS_RATE	10	/* Cross probability = 1 / CROSS_RATE */
+#define	GENERATIONS	9994484	/* Number of generations to compute */
+
+#define	MAX_KEY		0x100	/* Maximum length of yaml keys  */
+
+struct ConfigIntVar{
+   const char name[MAX_KEY];
+   unsigned value;
+};
+typedef struct ConfigIntVar ConfigIntVar;
+
+enum Problem_idx {workers_idx, period_idx, shift_length_idx };
+enum Goals_idx {shift_week_idx, staff_number_ix, staff_weekend_number_idx, work_load_idx };
+enum Penalty_points_idx { 
+       shift_week_extra_penalty_idx, 
+       shift_week_defect_penalty_idx,                      
+       halving_weekend_penalty_idx,      
+       weekend_injustice_penalty_idx,    
+       consecutive_weekend_injustice_idx,
+       bad_free_days_penalty_idx,        
+       few_people_penalty_idx,           
+       extra_people_penalty_idx,         
+       work_load_penalty_idx
+};
+enum Inner_working_idx { generations_idx, population_idx, cross_rate_idx };
 
 enum TWorking
 { working, off_work };

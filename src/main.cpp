@@ -17,22 +17,52 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
+#include <yaml.h>
 
 #include "ag.h"
+#include "filenames.h"
 #include "manage_time.h"
 #include "chromosomal.h"
-#include "gene.h"
-#include "allele.h"
 #include "screen.h"
+#include "mutation_controller.h"
 
-/* Command line default options */
-#define	WORKERS 	5	/* Number of workers to plan  */
-#define	PERIOD		(5 * WEEK)	/* Number of days to plan  */
-#define	POPULATION	300	/* Number of solucion in each generation */
-#define	GENERATIONS	22984	/* Number of generations to compute */
+/* Characteristics of what to achieve (input data) */
+ConfigIntVar problem[] = {
+   { "workers",      WORKERS },
+   { "period",       PERIOD  },
+   { "shift_length", SL      }
+};
+
+/* Properties of the solution (what to achieve) */
+ConfigIntVar goals[] = {
+   { "shift_week",           SW  },
+   { "staff_number",         SN  },
+   { "staff_weekend_number", SNW },
+   { "work_load",            WL  }
+};
+
+ConfigIntVar penalty_points[] = {
+   { "shift_week_extra_penalty",       SWEP	 },
+   { "shift_week_defect_penalty",      SWDP	 },
+   { "halving_weekend_penalty",        HWP	 },
+   { "weekend_injustice_penalty",      BW	 },
+   { "consecutive_weekend_injustice",  BCW	 },
+   { "bad_free_days_penalty",          BFD	 },
+   { "few_people_penalty",             FP	 },
+   { "extra_people_penalty",           EP	 },
+   { "work_load_penalty",              WLP	 }
+};
+
+ConfigIntVar inner_working[] = {
+   { "generations", GENERATIONS },
+   { "population",  POPULATION  },
+   { "cross_rate",  CROSS_RATE  }
+};
+
 
 Population population;
 bool exit_request = false;
@@ -40,95 +70,144 @@ bool exit_request = false;
 void
 ex_program (int sig)
 {
-  printf ("Aborted by user !!! - Catched signal: %d ... !!\n", sig);
+  printf ("\nAborted by user !!! - Catched signal: %d ... !!\n", sig);
   exit_request = true;
   (void) signal (SIGINT, SIG_DFL);
 }
 
-    /* 
-     * ===  FUNCTION  ======================================================================
-     *         Name:  main
-     *  Description:  Main controller 
-     * =====================================================================================
-     */
-int
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  set_global
+ *  Description:  Sets a global (user defined variable). Returns NULL if 
+ *               global not found.
+ * =====================================================================================
+ */
+  bool
+set_global( const char* key, const char *value )
+{
+   bool found = false;
+
+   for (unsigned i=0; i<sizeof(problem) / sizeof(ConfigIntVar); i++)
+      if (!strcmp(problem[i].name, key)){
+	 problem[i].value = atoi(value);
+	 found = true;
+      }
+   for (unsigned i=0; i<sizeof(goals) / sizeof(ConfigIntVar); i++)
+      if (!strcmp(goals[i].name, key)){
+	 goals[i].value = atoi(value);
+	 found = true;
+      }
+   for (unsigned i=0; i<sizeof(penalty_points) / sizeof(ConfigIntVar); i++)
+      if (!strcmp(penalty_points[i].name, key)){
+	 penalty_points[i].value = atoi(value);
+	 found = true;
+      }
+   for (unsigned i=0; i<sizeof(inner_working) / sizeof(ConfigIntVar); i++)
+      if (!strcmp(inner_working[i].name, key)){
+	 inner_working[i].value = atoi(value);
+	 found = true;
+      }
+   return found;
+}		/* -----  end of function find_global_for  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  load_config_file
+ *  Description:  Overrides default values with the ones provided in a defautl file.
+ * =====================================================================================
+ */
+   void
+load_config_file ( )
+{
+   FILE *config;
+   yaml_parser_t parser;
+   yaml_event_t event;
+   char key[MAX_KEY], value[MAX_KEY];
+   bool key_type = true;
+   
+   if ( config = fopen(CONFIG_FILE, "rb")){
+      if (!yaml_parser_initialize(&parser)){
+	 perror("Couldn't initialize yaml parser. Proceeding with default options.\n");
+	 return;
+      }
+
+      yaml_parser_set_input_file(&parser, config);
+      do {
+	 yaml_parser_parse(&parser, &event);
+	 switch(event.type)
+	 { 
+	    case YAML_NO_EVENT: puts("No event!"); break;
+				/*  Stream start/end */
+	    case YAML_STREAM_START_EVENT:  break;
+	    case YAML_STREAM_END_EVENT:    break;
+					  /*  Block delimeters */
+	    case YAML_DOCUMENT_START_EVENT: /* puts("<b>Start Document</b>");*/ break;
+	    case YAML_DOCUMENT_END_EVENT:   /* puts("<b>End Document</b>");  */ break;
+	    case YAML_SEQUENCE_START_EVENT: /* puts("<b>Start Sequence</b>");*/ break;
+	    case YAML_SEQUENCE_END_EVENT:   /* puts("<b>End Sequence</b>");  */ break;
+	    case YAML_MAPPING_START_EVENT:  /* puts("<b>Start Mapping</b>"); */ break;
+	    case YAML_MAPPING_END_EVENT:    /* puts("<b>End Mapping</b>");   */ break;
+					    /*  Data */
+	    case YAML_ALIAS_EVENT:  /* printf("Got alias (anchor %s)\n", event.data.alias.anchor); */ break;
+	    case YAML_SCALAR_EVENT: 
+		if (key_type){
+		 strcpy(key,  (const char *) event.data.scalar.value); 
+		 key_type = false;
+		}
+		else
+		{
+		   strcpy(value,  (const char *) event.data.scalar.value); 
+		   if (!  set_global(key, value) )
+		      fprintf(stderr, "\nInvalid user option %s found.\n", key);
+		 key_type = true;
+		}
+		break;
+	 }
+	 if(event.type != YAML_STREAM_END_EVENT)
+	    yaml_event_delete(&event);
+      } while(event.type != YAML_STREAM_END_EVENT);
+
+      yaml_event_delete(&event); 
+      yaml_parser_delete(&parser);
+      fclose(config);
+   }
+}		/* -----  end of function load_config_file  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  main
+ *  Description:  Main function 
+ * =====================================================================================
+ */
+   int
 main (int argc, char *argv[])
 {
-  unsigned period = PERIOD;
-  unsigned workers = WORKERS;
-  unsigned max_population = POPULATION;
-  unsigned max_times, max_rotations, max_mutations;
+   unsigned period;
+   unsigned workers;
+   unsigned max_population;
 
-  (void) signal (SIGINT, ex_program);
-  srand (time (0));
+   (void) signal (SIGINT, ex_program);
+   srand (time (0));
 
-  population = create_initial_population (workers, period, max_population);
+   load_config_file();
+   period = problem[period_idx].value;
+   workers = problem[workers_idx].value;
+   max_population = inner_working[population_idx].value;
 
-  for (int g = 0; g < GENERATIONS && !exit_request; g++)
-    {
-      max_times = rand () % POPULATION / 4;
-      max_mutations = rand () % 4;
-      for (unsigned times = 0; times < max_times; times++)
-	for (unsigned mutations = 0; mutations < max_mutations; mutations++)
-	  {
-	    unsigned s = 1 + rand () % (population.length - 1);
-	    mutation_gene (population.person[s],
-			   rand () % population.person[s].length);
-	    random_wknd_gene (population.person[s],
-			   rand () % population.person[s].length);
-	  }
+   population = create_initial_population (workers, period, max_population);
 
-      // Mutate thru rotation 
-      max_times = rand () % POPULATION / 4;
-      max_rotations = rand () % 2;
-      for (unsigned times = 0; times < max_times; times++)
-	for (unsigned rotations = 0; rotations < max_rotations; rotations++)
-	  {
-	    unsigned s = 1 + rand () % (population.length - 1);
-	    random_rotate_gene (population.person[s],
-				rand () % population.person[s].length);
-	  }
-
-
-      max_times = rand () % POPULATION / 4;
-      for (unsigned times = 0; times < max_times; times++)
-	{
-	  random_shift (population.person
-			[1 + rand () % (population.length - 1)]);
-	  cross (population.person[1 + rand () % (population.length - 1)],
-		 population.person[1 + rand () % (population.length - 1)]);
-	  interchain (population.person
-		      [1 + rand () % (population.length - 1)]);
-	}
-
-
-      fix_staff (population);
-      check_aptitude (population);
-      sort_by_penalty (population);
-
-
-      // Procreate 
-      unsigned position = 1;
-      for (unsigned b = 0; b < 20; b++)
-	while (position < population.length - 20)
-	  {
-	    for (unsigned times = 0; times < 20 - b; times++, position++)
-	      copy (population, 20 + position, b);
-	  }
-
+   for (int g = 0; g < inner_working[generations_idx].value && !exit_request; g++)
       printf
-	("\rComputing generation %5u. Best penalty rate %u.                                       \r",
-	 g, population.person[0].penalty_sum);
-      // fflush (stdout); // Flushing is very time consuming.
-    }
+	 ("\rComputing generation %5u. Best penalty rate %u.      \r",
+	  g, mutate_generation(population) );
 
+   analyze_aptitude (&(population.person[0]));
+   show_chromosome (population.person[0]);
+   display_penalties (population.person[0]);
+   deallocate_pop (population);
 
-  analyze_aptitude (&(population.person[0]));
-  show_chromosome (population.person[0]);
-  display_penalties (population.person[0]);
-  deallocate_pop (population);
-
-  return EXIT_SUCCESS;
+   return EXIT_SUCCESS;
 }
 
 /* ----------  end of function main  ---------- */

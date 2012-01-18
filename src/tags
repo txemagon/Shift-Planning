@@ -6,15 +6,12 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 CONS_WE_PENAL	chromosomal.cpp	64;"	d	file:
 FREEDAY_PENAL	chromosomal.cpp	66;"	d	file:
-GENERATIONS	main.cpp	35;"	d	file:
 INDIV_PENAL	chromosomal.cpp	61;"	d	file:
 LONG_SH_PENAL	chromosomal.cpp	62;"	d	file:
-PERIOD	main.cpp	33;"	d	file:
-POPULATION	main.cpp	34;"	d	file:
 WEEKEND_PENAL	chromosomal.cpp	65;"	d	file:
 WEEK_HA_PENAL	chromosomal.cpp	63;"	d	file:
-WORKERS	main.cpp	32;"	d	file:
 analyze_aptitude	screen.cpp	/^analyze_aptitude (Chromosome * chromo)$/;"	f
+bubble_gene	chromosomal.cpp	/^bubble_gene ( Chromosome chromo )$/;"	f
 check_aptitude	screen.cpp	/^check_aptitude (Population population)$/;"	f
 clear_penalties	screen.cpp	/^clear_penalties (Population population)$/;"	f
 copy	chromosomal.cpp	/^copy (Population population, unsigned dest, unsigned src)$/;"	f
@@ -35,6 +32,8 @@ interchain	chromosomal.cpp	/^interchain (Chromosome chromo)$/;"	f
 is_working	gene.cpp	/^is_working (unsigned gene, unsigned worker)$/;"	f
 is_working_the_weekend	allele.cpp	/^is_working_the_weekend (Chromosome chromo, unsigned worker, unsigned week)$/;"	f
 main	main.cpp	/^main (int argc, char *argv[])$/;"	f
+mutate_chromo	mutation_controller.cpp	/^mutate_chromo ( Chromosome chromo )$/;"	f
+mutate_generation	mutation_controller.cpp	/^mutate_generation ( Population population )$/;"	f
 mutation_gene	allele.cpp	/^mutation_gene (Chromosome chromo, unsigned position)$/;"	f
 people_working	gene.cpp	/^people_working (unsigned gene)$/;"	f
 population	main.cpp	/^Population population;$/;"	v

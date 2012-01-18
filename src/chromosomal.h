@@ -28,7 +28,5 @@ void copy (Population population, unsigned dest, unsigned src);
 void fix_staff (Population population);
 void cross (Chromosome chromo1, Chromosome chromo2);
 void display_penalties (Chromosome chromo);
-void random_shift (Chromosome chromo);
-void interchain (Chromosome chromo);
 
 #endif

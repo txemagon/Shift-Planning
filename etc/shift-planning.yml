@@ -2,7 +2,7 @@
 
 # Default solution to find
 workers: 5                      # Number of workers to plan
-period: 35                      # Number of days to plan
+period: 35                      # Number of days to plan (Not tested under non multiple of 7 numbers)
 
 # Targets
 shift_week: 5                   # Number of days to work together
@@ -12,11 +12,11 @@ work_load: 375                  # In tenths of houur per week.
 shift_length: 70                # Daily tenths of hour.
 
 # Penalty points
-shift_week_extra_penalty: 4             # Punish working a lot of days together.
+shift_week_extra_penalty: 40             # Punish working a lot of days together.
 shift_week_defect_penalty: 1            # Punish interleaving holidays and work
-halving_weekend_penalty: 4              # Punish not giving the whole weekend
+halving_weekend_penalty: 64              # Punish not giving the whole weekend
 weekend_injustice_penalty: 2            # Punish different number of weekends
-consecutive_weekend_injustice: 4        # Punish working one weekend after another
+consecutive_weekend_injustice: 2        # Punish working one weekend after another
 bad_free_days_penalty: 1                # Ensure the same amount of free days
 few_people_penalty: 3                   # Ensure the correct crew
 extra_people_penalty: 4                 # Ensure the correct crew 
