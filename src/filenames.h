@@ -23,4 +23,4 @@
 
 #define		CONFIG_FILE	"../etc/shift-planning.yml"	/* Params for each run  */
 
-#endif   /* ----- #ifndef FILENAMES_H  ----- */
+#endif /* ----- #ifndef FILENAMES_H  ----- */

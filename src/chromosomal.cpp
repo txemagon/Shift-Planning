@@ -52,59 +52,26 @@ show_chromosome (Chromosome chromosome)
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  display_summaries
+ *         Name:  display_penalties
  *  Description:  Displays the different summary fields.
  * =====================================================================================
  */
 void
 display_penalties (Chromosome chromo)
 {
-#define INDIV_PENAL 5
-#define LONG_SH_PENAL 0
-#define WEEK_HA_PENAL 1
-#define CONS_WE_PENAL 2
-#define WEEKEND_PENAL 3
-#define FREEDAY_PENAL 4
+   unsigned worked;
 
-  int *totals = (int *) malloc (INDIV_PENAL * sizeof (int));
-  unsigned worked;
+   printf ("\nTOTALS\n");
+   printf ("======\n");
+   printf ("Bad staff number: %u\n", chromo.penalty.bad_staff_number);
+   printf ("Different weekend number: %u\n",
+	 chromo.penalty.different_weekend_number);
+   printf ("Different free days: %u\n", chromo.penalty.different_free_days);
+   printf ("Long Shifts: %u\n", chromo.penalty.long_shifts);
+   printf ("Weekends Halved: %u\n", chromo.penalty.weekends_halved);
+   printf ("Consecutive Weekends: %u\n",
+	 chromo.penalty.consecutive_weekends);
 
-  memset (totals, 0, INDIV_PENAL * sizeof (int));
-  printf ("\nINDIVIDUALS\n");
-  printf ("===========\n");
-  for (unsigned w = 0; w < chromo.width; w++)
-    {
-      printf ("\nWorker %u\n", w + 1);
-      printf ("Long Shifts: %u\n", chromo.summary.long_shifts[w]);
-      totals[LONG_SH_PENAL] += chromo.summary.long_shifts[w];
-      printf ("Weekends Halved: %u\n", chromo.summary.weekends_halved[w]);
-      totals[WEEK_HA_PENAL] += chromo.summary.weekends_halved[w];
-      printf ("Consecutive Weekends: %u\n",
-	      chromo.summary.consecutive_weekends[w]);
-      totals[CONS_WE_PENAL] += chromo.summary.consecutive_weekends[w];
-      printf ("Free Weekends: %u\n", chromo.summary.weekends[w]);
-      totals[WEEKEND_PENAL] += chromo.summary.weekends[w];
-      printf ("Free Days: %u\n", chromo.summary.freedays[w]);
-      totals[FREEDAY_PENAL] += chromo.summary.freedays[w];
-      worked = chromo.length - chromo.summary.freedays[w];
-      printf ("Worked days: %u\n", worked);
-      printf ("Work Load Rate: %.2lf\n", (double) (worked)  * WEEK / chromo.length / goals[work_load_idx].value * problem[shift_length_idx].value);
-    }
-
-  printf ("\nTOTALS\n");
-  printf ("======\n");
-  printf ("Bad staff number: %u\n", chromo.summary.bad_staff_number);
-  printf ("Different weekend number: %u\n",
-	chromo.summary.different_weekend_number);
-  printf ("Different free days: %u\n", chromo.summary.different_free_days);
-
-  printf ("Long Shifts: %u\n", totals[LONG_SH_PENAL]);
-  printf ("Weekends Halved: %u\n", totals[WEEK_HA_PENAL]);
-  printf ("Consecutive Weekends: %u\n", totals[CONS_WE_PENAL]);
-  printf ("Free Weekends: %u\n", totals[WEEKEND_PENAL]);
-  printf ("Free Days: %u\n", totals[FREEDAY_PENAL]);
-
-  free (totals);
 }				/* -----  end of function display_penalties  ----- */
 
 /* 
@@ -120,13 +87,13 @@ init_chromosome (unsigned workers, unsigned period)
    static unsigned n_chromo = 0;
    Chromosome chromo;
    printf ("\r                                                  ");
-   printf ("\rGenrating random chromosome: %6u\r", ++n_chromo);
+   printf ("\rGenerating random chromosome: %6u\r", ++n_chromo);
    fflush (stdout);
 
    chromo.length = period;
    chromo.width = workers;
    chromo.penalty_sum = 0;
-   chromo.summary.long_shifts =
+   chromo.summary.extra_shifts =
       (unsigned *) malloc (workers * sizeof (unsigned));
    chromo.summary.weekends_halved =
       (unsigned *) malloc (workers * sizeof (unsigned));
@@ -141,8 +108,8 @@ init_chromosome (unsigned workers, unsigned period)
       chromo.gene[i] =
 	 random_gene (chromo.width,
 	       (i % WEEK == SATURDAY
-		|| i % WEEK == SATURDAY + 1) ? 
-	       goals[staff_number_ix].value : 
+		|| i % WEEK == SATURDAY + 1) ?
+	       goals[staff_number_ix].value :
 	       goals[staff_weekend_number_idx].value);
 
    return chromo;
@@ -182,7 +149,7 @@ deallocate_pop (Population population)
 {
    for (unsigned i = 0; i < population.length; i++)
    {				/* Remove population */
-      free (population.person[i].summary.long_shifts);
+      free (population.person[i].summary.extra_shifts);
       free (population.person[i].summary.weekends_halved);
       free (population.person[i].summary.consecutive_weekends);
       free (population.person[i].summary.weekends);
@@ -286,5 +253,3 @@ cross (Chromosome chromo1, Chromosome chromo2)
    memcpy (&(chromo2.gene[start2]), buffer, length);
    free (buffer);
 }				/* -----  end of function cross  ----- */
-
-

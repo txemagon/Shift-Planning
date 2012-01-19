@@ -40,12 +40,12 @@ get_day (int day_of_week)
  *                limits.
  * =====================================================================================
  */
-   int
+int
 the_next_wekend_as_of (unsigned day, unsigned max)
 {
-   unsigned week = day / week; 
-   day  = week * WEEK + SATURDAY;
-   if (day >= max)
-      day = -1;
-   return day;
-}		/* -----  end of function the_next_wekend_as_of  ----- */
+  unsigned week = day / week;
+  day = week * WEEK + SATURDAY;
+  if (day >= max)
+    day = -1;
+  return day;
+}				/* -----  end of function the_next_wekend_as_of  ----- */

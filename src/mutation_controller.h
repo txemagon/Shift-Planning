@@ -19,6 +19,6 @@
 #ifndef  MUTATION_CONTROLLER_H
 #define  MUTATION_CONTROLLER_H
 
-unsigned mutate_generation ( Population population );
+unsigned mutate_generation (Population population);
 
-#endif   /* ----- #ifndef MUTATION_CONTROLLER_H  ----- */
+#endif /* ----- #ifndef MUTATION_CONTROLLER_H  ----- */

@@ -49,42 +49,58 @@
 
 #define	MAX_KEY		0x100	/* Maximum length of yaml keys  */
 
-struct ConfigIntVar{
-   const char name[MAX_KEY];
-   unsigned value;
+struct ConfigIntVar
+{
+  const char name[MAX_KEY];
+  unsigned value;
 };
 typedef struct ConfigIntVar ConfigIntVar;
 
-enum Problem_idx {workers_idx, period_idx, shift_length_idx };
-enum Goals_idx {shift_week_idx, staff_number_ix, staff_weekend_number_idx, work_load_idx };
-enum Penalty_points_idx { 
-       shift_week_extra_penalty_idx, 
-       shift_week_defect_penalty_idx,                      
-       halving_weekend_penalty_idx,      
-       weekend_injustice_penalty_idx,    
-       consecutive_weekend_injustice_idx,
-       bad_free_days_penalty_idx,        
-       few_people_penalty_idx,           
-       extra_people_penalty_idx,         
-       work_load_penalty_idx
+enum Problem_idx
+{ workers_idx, period_idx, shift_length_idx };
+enum Goals_idx
+{ shift_week_idx, staff_number_ix, staff_weekend_number_idx, work_load_idx };
+enum Penalty_points_idx
+{
+  shift_week_extra_penalty_idx,
+  shift_week_defect_penalty_idx,
+  halving_weekend_penalty_idx,
+  weekend_injustice_penalty_idx,
+  consecutive_weekend_injustice_idx,
+  bad_free_days_penalty_idx,
+  few_people_penalty_idx,
+  extra_people_penalty_idx,
+  work_load_penalty_idx
 };
-enum Inner_working_idx { generations_idx, population_idx, cross_rate_idx };
+enum Inner_working_idx
+{ generations_idx, population_idx, cross_rate_idx };
 
 enum TWorking
 { working, off_work };
 
 struct Summary
 {
-  unsigned bad_staff_number;
-  unsigned different_weekend_number;
-  unsigned different_free_days;
-  unsigned *long_shifts;	/* Separate penalties by worker */
+  unsigned extra_staff_number;
+  unsigned defect_staff_number;
+  unsigned *extra_shifts;	/* Separate penalties by worker */
   unsigned *weekends_halved;
   unsigned *consecutive_weekends;
   unsigned *weekends;
   unsigned *freedays;
+  unsigned mutations;
 };				/* ----------  end of struct Penalty  ---------- */
 typedef struct Summary Summary;
+
+struct Penalty{
+  unsigned bad_staff_number;
+  unsigned different_weekend_number;
+  unsigned different_free_days;
+  unsigned weekends_halved;
+  unsigned long_shifts;
+  unsigned consecutive_weekends;
+  unsigned work_load;
+};
+typedef struct Penalty Penalty;
 
 struct Chromosome
 {
@@ -92,7 +108,8 @@ struct Chromosome
   unsigned width;		/* Number of workers */
   unsigned length;		/* Period (number of days) computed */
   unsigned penalty_sum;		/* Keeping the sum of penalties improves the computation speed  */
-  Summary summary;		/* Offenses against the adaptation rules */
+  Summary summary;		/* Report of the chromosome */
+  Penalty penalty;		/* Offenses against the adaptation rules */
 };				/* ----------  end of struct Chromosome  ---------- */
 typedef struct Chromosome Chromosome;
 

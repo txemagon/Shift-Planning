@@ -86,19 +86,21 @@ is_working_the_weekend (Chromosome chromo, unsigned worker, unsigned week)
  *                is discarded.
  * =====================================================================================
  */
-   int
-get_first_free_wknd_since ( Chromosome chromo, unsigned worker, unsigned since_day )
+int
+get_first_free_wknd_since (Chromosome chromo, unsigned worker,
+			   unsigned since_day)
 {
-   int day = 0;
-   if (since_day >= chromo.length){
+  int day = 0;
+  if (since_day >= chromo.length)
+    {
       return -1;
-   }
+    }
 
-   for (unsigned test = since_day; test<chromo.length; test+=WEEK)
-      if (!is_working_the_weekend(chromo, worker, test / WEEK) )
-	 return the_next_wekend_as_of(test, chromo.length);
-   return -1;
-}		/* -----  end of function get_first_free_wknd_since  ----- */
+  for (unsigned test = since_day; test < chromo.length; test += WEEK)
+    if (!is_working_the_weekend (chromo, worker, test / WEEK))
+      return the_next_wekend_as_of (test, chromo.length);
+  return -1;
+}				/* -----  end of function get_first_free_wknd_since  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -131,13 +133,13 @@ mutation_gene (Chromosome chromo)
   /* Probability of mutating <index of the array> times */
   unsigned mutation_times[] = { 60, 80, 90, 95, 100 };
   unsigned probability = rand () % 100;
-  unsigned position = rand() % chromo.length;
+  unsigned position = rand () % chromo.length;
 
   if (position % WEEK == SATURDAY + 1)
     position--;
   if (position % WEEK == SATURDAY)
     {
-       unsigned random_shift = random_gene (chromo.width, SNW); 
+      unsigned random_shift = random_gene (chromo.width, SNW);
       chromo.gene[position] = random_shift;
       chromo.gene[position + 1] = random_shift;
     }
@@ -156,14 +158,16 @@ mutation_gene (Chromosome chromo)
 void
 random_wknd_gene (Chromosome chromo)
 {
-   unsigned position = rand() % chromo.length;
-   unsigned day = the_next_wekend_as_of(position, chromo.width); 
-   if (day > -1 && day + 1 < chromo.width){
-      unsigned random_shift = random_gene (chromo.width, goals[staff_weekend_number_idx].value ); 
+  unsigned position = rand () % chromo.length;
+  unsigned day = the_next_wekend_as_of (position, chromo.width);
+  if (day > -1 && day + 1 < chromo.width)
+    {
+      unsigned random_shift =
+	random_gene (chromo.width, goals[staff_weekend_number_idx].value);
       chromo.gene[position] = random_shift;
       chromo.gene[position + 1] = random_shift;
-   }
-}		/* -----  end of function random_wknd_gene  ----- */
+    }
+}				/* -----  end of function random_wknd_gene  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -171,19 +175,19 @@ random_wknd_gene (Chromosome chromo)
  *  Description:  Changes the shift from one person to another.
  * =====================================================================================
  */
-   void
+void
 random_shift (Chromosome chromo)
 {
-   unsigned start;
-   unsigned length;
-   int rotations = rand () % (2 * chromo.width);
-   start = rand () % (chromo.length / WEEK);
-   start *= WEEK;
-   length = rand () % (chromo.length - start);
-   length = WEEK;
+  unsigned start;
+  unsigned length;
+  int rotations = rand () % (2 * chromo.width);
+  start = rand () % (chromo.length / WEEK);
+  start *= WEEK;
+  length = rand () % (chromo.length - start);
+  length = WEEK;
 
-   for (unsigned g = start; g < start + length; g++)
-      chromo.gene[g] = rotate_gene (chromo.gene[g], rotations, chromo.width);
+  for (unsigned g = start; g < start + length; g++)
+    chromo.gene[g] = rotate_gene (chromo.gene[g], rotations, chromo.width);
 
 }				/* -----  end of function cross  ----- */
 
@@ -193,34 +197,34 @@ random_shift (Chromosome chromo)
  *  Description:  Changes one whole week inside a single solution (chromosome)
  * =====================================================================================
  */
-   void
+void
 interchain (Chromosome chromo)
 {
-   unsigned start1, start2;
-   unsigned worker1, worker2;
-   unsigned buffer = 0;
-   unsigned mask1 = 0, mask2 = 0;
+  unsigned start1, start2;
+  unsigned worker1, worker2;
+  unsigned buffer = 0;
+  unsigned mask1 = 0, mask2 = 0;
 
-   start1 = rand () % chromo.length / WEEK;
-   start2 = rand () % chromo.length / WEEK;
-   start1 *= WEEK;
-   start2 *= WEEK;
-   worker1 = rand () % chromo.width;
-   worker2 = rand () % chromo.width;
+  start1 = rand () % chromo.length / WEEK;
+  start2 = rand () % chromo.length / WEEK;
+  start1 *= WEEK;
+  start2 *= WEEK;
+  worker1 = rand () % chromo.width;
+  worker2 = rand () % chromo.width;
 
-   mask1 = 1 << worker1;
-   mask2 = 1 << worker2;
+  mask1 = 1 << worker1;
+  mask2 = 1 << worker2;
 
-   for (unsigned day = 0; day < WEEK; day++)
-   {
+  for (unsigned day = 0; day < WEEK; day++)
+    {
       buffer <<= 1;
       buffer |= ! !(chromo.gene[start1 + day] & mask1);
       chromo.gene[start1 + day] &= (~mask1);
       chromo.gene[start1 + day] |=
-	 (! !(mask2 & chromo.gene[start2 + day]) << worker1);
+	(! !(mask2 & chromo.gene[start2 + day]) << worker1);
       chromo.gene[start2 + day] &= 0xFFFFFFFF ^ (1 << worker2);
       chromo.gene[start2 + day] |= (buffer & 1) << worker2;
-   }
+    }
 
 }				/* -----  end of function interchain  ----- */
 
@@ -231,13 +235,13 @@ interchain (Chromosome chromo)
  *  Description:  
  * =====================================================================================
  */
-   void
-bubble_gene ( Chromosome chromo )
+void
+bubble_gene (Chromosome chromo)
 {
-   unsigned pos1 = rand () % chromo.length;
-   unsigned pos2 = rand () % chromo.length;
+  unsigned pos1 = rand () % chromo.length;
+  unsigned pos2 = rand () % chromo.length;
 
-   unsigned buffer = chromo.gene[pos1];
-   chromo.gene[pos1] = chromo.gene[pos2];
-   chromo.gene[pos2] = buffer;
-}		/* -----  end of function bubble  ----- */
+  unsigned buffer = chromo.gene[pos1];
+  chromo.gene[pos1] = chromo.gene[pos2];
+  chromo.gene[pos2] = buffer;
+}				/* -----  end of function bubble  ----- */

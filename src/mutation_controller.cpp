@@ -33,11 +33,12 @@
  *  Description:  
  * =====================================================================================
  */
-   void
-mutate_chromo ( Chromosome chromo )
+void
+mutate_chromo (Chromosome chromo)
 {
-  mutator[rand() % MUT_NB](chromo); 
-}		/* -----  end of function mutate_chromo  ----- */
+   for (int i=rand() %10; i>0; i--)
+      mutator[rand () % MUT_NB] (chromo);
+}				/* -----  end of function mutate_chromo  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -46,12 +47,12 @@ mutate_chromo ( Chromosome chromo )
  * =====================================================================================
  */
    unsigned
-mutate_generation ( Population population )
+mutate_generation (Population population)
 {
 
    int chromos = population.length;
-   for (int i=1; i<chromos; i++)
-     mutate_chromo(population.person[i]); 
+   for (int i = 1; i < chromos; i++)
+      mutate_chromo (population.person[i]);
 
    fix_staff (population);
    check_aptitude (population);
@@ -63,13 +64,17 @@ mutate_generation ( Population population )
    for (unsigned b = 0; b < 20; b++)
       while (position < population.length)
       {
-	 for (unsigned times = 0; times < 20 - b && position < population.length; times++, position++){
+	 for (unsigned times = 0;
+	       times < 20 - b && position < population.length;
+	       times++, position++)
+	 {
 	    copy (population, position, b);
-	    if (rand() % inner_working[cross_rate_idx].value == 1)
-	       cross(population.person[position], population.person[ 1 + rand() % (position - 1)]);
+	    if (rand () % inner_working[cross_rate_idx].value == 1)
+	       cross (population.person[position],
+		     population.person[1 + rand () % (position - 1)]);
 	 }
       }
 
 
    return population.person[0].penalty_sum;
-}		/* -----  end of function mutate_generation  ----- */
+}				/* -----  end of function mutate_generation  ----- */

@@ -25,13 +25,10 @@
 #include "chromosomal.h"
 #include "allele.h"
 
-void (*mutator[])(Chromosome chromo) = {
-   mutation_gene,
-   random_wknd_gene ,
-   random_rotate_gene ,
-   random_shift ,
-   interchain ,
-   bubble_gene
-};
+void (*mutator[]) (Chromosome chromo) =
+{
+mutation_gene,
+    random_wknd_gene,
+    random_rotate_gene, random_shift, interchain, bubble_gene};
 
-#endif   /* ----- #ifndef MUTATION_CONTROLLER_PRIVATE_H  ----- */
+#endif /* ----- #ifndef MUTATION_CONTROLLER_PRIVATE_H  ----- */

@@ -36,4 +36,4 @@ extern enum WeekDay first_day_of_week;
 int get_day (int day_of_week);
 int the_next_wekend_as_of (unsigned day, unsigned max);
 
-#endif   /* ----- #ifndef MANAGE_TIME_H  ----- */
+#endif /* ----- #ifndef MANAGE_TIME_H  ----- */
