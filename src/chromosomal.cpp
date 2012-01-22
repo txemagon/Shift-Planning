@@ -30,6 +30,7 @@
 #include "allele.h"
 #include "chromosomal.h"
 
+#define		MAX_TRANSLATION		0x100	/* String for displaying numerical info */
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  show_chromosome
@@ -50,6 +51,32 @@ show_chromosome (Chromosome chromosome)
     }
 }				/* -----  end of function show_chromosome  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  display_summaries()
+ *  Description:  
+ * =====================================================================================
+ */
+   void
+display_summaries ( Chromosome chromo )
+{
+   char translation[MAX_TRANSLATION];
+
+   printf("\nSUMMARY\n");
+   printf("=======\n\n");
+   printf("Extra staff: %u\n", chromo.summary.extra_staff_number); 
+   printf("Defect staff: %u\n", chromo.summary.defect_staff_number); 
+   printf("base %u\n", get_shift_base(chromo));
+   for (unsigned worker=0; worker<chromo.width; worker++){
+      printf("\nWorker %2u\n", worker + 1);
+      printf("---------\n");
+      printf("Extra shifts: %u\n%s\n", chromo.summary.extra_shifts[worker], display_amounts(translation, chromo.summary.extra_shifts[worker], get_shift_base(chromo) )); 
+      printf("Weekends halved: %u\n", chromo.summary.weekends_halved[worker]); 
+      printf("Free weekends: %u\n", chromo.summary.weekends[worker]); 
+      printf("Free days: %u\n", chromo.summary.freedays[worker]); 
+   }
+
+}		/* -----  end of function display_summaries()  ----- */
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  display_penalties

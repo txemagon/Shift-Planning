@@ -12,7 +12,7 @@ work_load: 375                  # In tenths of houur per week.
 shift_length: 70                # Daily tenths of hour.
 
 # Penalty points
-shift_week_extra_penalty: 8             # Punish working a lot of days together.
+shift_week_extra_penalty: 2             # Punish working a lot of days together.
 shift_week_defect_penalty: 1            # Punish interleaving holidays and work
 halving_weekend_penalty: 7              # Punish not giving the whole weekend
 weekend_injustice_penalty: 2            # Punish different number of weekends

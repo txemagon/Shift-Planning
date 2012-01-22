@@ -28,5 +28,6 @@ unsigned is_working (unsigned gene, unsigned worker);
 unsigned people_working (unsigned gene);
 unsigned set_worker (unsigned gene, unsigned worker, enum TWorking value);
 unsigned xchg_workers (unsigned gene, unsigned worker1, unsigned worker2);
+char * display_amounts ( char *buffer, unsigned value, unsigned base );
 
 #endif /* ----- #ifndef GENE_H  ----- */

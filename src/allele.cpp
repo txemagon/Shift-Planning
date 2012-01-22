@@ -24,21 +24,56 @@
 
 /* 
  * ===  FUNCTION  ======================================================================
+ *         Name:  get_shift_base
+ *  Description:  Returns base for extra shift period encodings
+ * =====================================================================================
+ */
+unsigned
+get_shift_base ( Chromosome chromo)
+{
+  unsigned base  = 1;
+
+  while (base < chromo.length - goals[shift_week_idx].value)
+     base <<= 1;
+
+  return base;
+}		/* -----  end of function get_shift_base  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  get_consweekend_base
+ *  Description:  Returns the base for consecutive weekend encoding
+ * =====================================================================================
+ */
+   unsigned
+get_consweekend_base ( Chromosome chromo )
+{
+   unsigned base  = 1;
+   unsigned mww   = chromo.length / WEEK + 1;
+
+   while (base < mww)
+      base <<= 1;
+
+   return base;
+}		/* -----  end of function get_consweekend_base  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
  *         Name:  get_total_freedays
  *  Description:  counts the amount of free days of a given worker. 
  * =====================================================================================
  */
-unsigned
+   unsigned
 get_total_freedays (Chromosome chromo, unsigned worker)
 {
-  unsigned total = 0;
+   unsigned total = 0;
 
-  worker %= chromo.width;
+   worker %= chromo.width;
 
-  for (unsigned day = 0; day < chromo.length; day++)
-    if (!(chromo.gene[day] & (1 << worker)))
-      total++;
-  return total;
+   for (unsigned day = 0; day < chromo.length; day++)
+      if (!(chromo.gene[day] & (1 << worker)))
+	 total++;
+   return total;
 }				/* -----  end of function get_total_freedays  ----- */
 
 /* 
@@ -47,18 +82,18 @@ get_total_freedays (Chromosome chromo, unsigned worker)
  *  Description:  counts the amount of complete free weekends of a given worker. 
  * =====================================================================================
  */
-unsigned
+   unsigned
 get_total_weekends (Chromosome chromo, unsigned worker)
 {
-  unsigned total = 0;
+   unsigned total = 0;
 
-  worker %= chromo.width;
+   worker %= chromo.width;
 
-  for (unsigned day = SATURDAY; day + 1 < chromo.length; day += WEEK)
-    if (!(chromo.gene[day] & (1 << worker))
-	&& !(chromo.gene[day + 1] & (1 << worker)))
-      total++;
-  return total;
+   for (unsigned day = SATURDAY; day + 1 < chromo.length; day += WEEK)
+      if (!(chromo.gene[day] & (1 << worker))
+	    && !(chromo.gene[day + 1] & (1 << worker)))
+	 total++;
+   return total;
 }				/* -----  end of function get_total_freedays  ----- */
 
 
@@ -68,13 +103,13 @@ get_total_weekends (Chromosome chromo, unsigned worker)
  *  Description:  Returns true if the employee is working the given week number
  * =====================================================================================
  */
-bool
+   bool
 is_working_the_weekend (Chromosome chromo, unsigned worker, unsigned week)
 {
 
-  int test_day = week * WEEK + SATURDAY;
-  return is_working (chromo.gene[test_day], worker)
-    || is_working (chromo.gene[test_day + 1], worker);
+   int test_day = week * WEEK + SATURDAY;
+   return is_working (chromo.gene[test_day], worker)
+      || is_working (chromo.gene[test_day + 1], worker);
 }				/* -----  end of function is_working_the_weekend  ----- */
 
 
@@ -86,20 +121,20 @@ is_working_the_weekend (Chromosome chromo, unsigned worker, unsigned week)
  *                is discarded.
  * =====================================================================================
  */
-int
+   int
 get_first_free_wknd_since (Chromosome chromo, unsigned worker,
-			   unsigned since_day)
+      unsigned since_day)
 {
-  int day = 0;
-  if (since_day >= chromo.length)
-    {
+   int day = 0;
+   if (since_day >= chromo.length)
+   {
       return -1;
-    }
+   }
 
-  for (unsigned test = since_day; test < chromo.length; test += WEEK)
-    if (!is_working_the_weekend (chromo, worker, test / WEEK))
-      return the_next_wekend_as_of (test, chromo.length);
-  return -1;
+   for (unsigned test = since_day; test < chromo.length; test += WEEK)
+      if (!is_working_the_weekend (chromo, worker, test / WEEK))
+	 return the_next_wekend_as_of (test, chromo.length);
+   return -1;
 }				/* -----  end of function get_first_free_wknd_since  ----- */
 
 /* 
@@ -109,14 +144,14 @@ get_first_free_wknd_since (Chromosome chromo, unsigned worker,
  *                left. 
  * =====================================================================================
  */
-void
+   void
 random_rotate_gene (Chromosome chromo)
 {
-  unsigned places = rand () % chromo.width;
-  unsigned position = rand () % chromo.length;
+   unsigned places = rand () % chromo.width;
+   unsigned position = rand () % chromo.length;
 
-  chromo.gene[position] =
-    rotate_gene (chromo.gene[position], places, chromo.width);
+   chromo.gene[position] =
+      rotate_gene (chromo.gene[position], places, chromo.width);
 
 }				/* -----  end of function rotate_gene  ----- */
 
@@ -127,24 +162,24 @@ random_rotate_gene (Chromosome chromo)
  *  Description:  Mutates a chromomosome several (one or more) times. 
  * =====================================================================================
  */
-void
+   void
 mutation_gene (Chromosome chromo)
 {
-  /* Probability of mutating <index of the array> times */
-  unsigned mutation_times[] = { 60, 80, 90, 95, 100 };
-  unsigned probability = rand () % 100;
-  unsigned position = rand () % chromo.length;
+   /* Probability of mutating <index of the array> times */
+   unsigned mutation_times[] = { 60, 80, 90, 95, 100 };
+   unsigned probability = rand () % 100;
+   unsigned position = rand () % chromo.length;
 
-  if (position % WEEK == SATURDAY + 1)
-    position--;
-  if (position % WEEK == SATURDAY)
-    {
+   if (position % WEEK == SATURDAY + 1)
+      position--;
+   if (position % WEEK == SATURDAY)
+   {
       unsigned random_shift = random_gene (chromo.width, SNW);
       chromo.gene[position] = random_shift;
       chromo.gene[position + 1] = random_shift;
-    }
-  else
-    chromo.gene[position] = random_gene (chromo.width, SN);
+   }
+   else
+      chromo.gene[position] = random_gene (chromo.width, SN);
 
 }				/* -----  end of function mutation_gene  ----- */
 
@@ -155,18 +190,18 @@ mutation_gene (Chromosome chromo)
  *  Description:  Generates a new weekend.
  * =====================================================================================
  */
-void
+   void
 random_wknd_gene (Chromosome chromo)
 {
-  unsigned position = rand () % chromo.length;
-  unsigned day = the_next_wekend_as_of (position, chromo.width);
-  if (day > -1 && day + 1 < chromo.width)
-    {
+   unsigned position = rand () % chromo.length;
+   unsigned day = the_next_wekend_as_of (position, chromo.width);
+   if (day > -1 && day + 1 < chromo.width)
+   {
       unsigned random_shift =
-	random_gene (chromo.width, goals[staff_weekend_number_idx].value);
+	 random_gene (chromo.width, goals[staff_weekend_number_idx].value);
       chromo.gene[position] = random_shift;
       chromo.gene[position + 1] = random_shift;
-    }
+   }
 }				/* -----  end of function random_wknd_gene  ----- */
 
 /* 
@@ -175,19 +210,19 @@ random_wknd_gene (Chromosome chromo)
  *  Description:  Changes the shift from one person to another.
  * =====================================================================================
  */
-void
+   void
 random_shift (Chromosome chromo)
 {
-  unsigned start;
-  unsigned length;
-  int rotations = rand () % (2 * chromo.width);
-  start = rand () % (chromo.length / WEEK);
-  start *= WEEK;
-  length = rand () % (chromo.length - start);
-  length = WEEK;
+   unsigned start;
+   unsigned length;
+   int rotations = rand () % (2 * chromo.width);
+   start = rand () % (chromo.length / WEEK);
+   start *= WEEK;
+   length = rand () % (chromo.length - start);
+   length = WEEK;
 
-  for (unsigned g = start; g < start + length; g++)
-    chromo.gene[g] = rotate_gene (chromo.gene[g], rotations, chromo.width);
+   for (unsigned g = start; g < start + length; g++)
+      chromo.gene[g] = rotate_gene (chromo.gene[g], rotations, chromo.width);
 
 }				/* -----  end of function cross  ----- */
 
@@ -197,34 +232,34 @@ random_shift (Chromosome chromo)
  *  Description:  Changes one whole week inside a single solution (chromosome)
  * =====================================================================================
  */
-void
+   void
 interchain (Chromosome chromo)
 {
-  unsigned start1, start2;
-  unsigned worker1, worker2;
-  unsigned buffer = 0;
-  unsigned mask1 = 0, mask2 = 0;
+   unsigned start1, start2;
+   unsigned worker1, worker2;
+   unsigned buffer = 0;
+   unsigned mask1 = 0, mask2 = 0;
 
-  start1 = rand () % chromo.length / WEEK;
-  start2 = rand () % chromo.length / WEEK;
-  start1 *= WEEK;
-  start2 *= WEEK;
-  worker1 = rand () % chromo.width;
-  worker2 = rand () % chromo.width;
+   start1 = rand () % chromo.length / WEEK;
+   start2 = rand () % chromo.length / WEEK;
+   start1 *= WEEK;
+   start2 *= WEEK;
+   worker1 = rand () % chromo.width;
+   worker2 = rand () % chromo.width;
 
-  mask1 = 1 << worker1;
-  mask2 = 1 << worker2;
+   mask1 = 1 << worker1;
+   mask2 = 1 << worker2;
 
-  for (unsigned day = 0; day < WEEK; day++)
-    {
+   for (unsigned day = 0; day < WEEK; day++)
+   {
       buffer <<= 1;
       buffer |= ! !(chromo.gene[start1 + day] & mask1);
       chromo.gene[start1 + day] &= (~mask1);
       chromo.gene[start1 + day] |=
-	(! !(mask2 & chromo.gene[start2 + day]) << worker1);
+	 (! !(mask2 & chromo.gene[start2 + day]) << worker1);
       chromo.gene[start2 + day] &= 0xFFFFFFFF ^ (1 << worker2);
       chromo.gene[start2 + day] |= (buffer & 1) << worker2;
-    }
+   }
 
 }				/* -----  end of function interchain  ----- */
 
@@ -235,13 +270,13 @@ interchain (Chromosome chromo)
  *  Description:  
  * =====================================================================================
  */
-void
+   void
 bubble_gene (Chromosome chromo)
 {
-  unsigned pos1 = rand () % chromo.length;
-  unsigned pos2 = rand () % chromo.length;
+   unsigned pos1 = rand () % chromo.length;
+   unsigned pos2 = rand () % chromo.length;
 
-  unsigned buffer = chromo.gene[pos1];
-  chromo.gene[pos1] = chromo.gene[pos2];
-  chromo.gene[pos2] = buffer;
+   unsigned buffer = chromo.gene[pos1];
+   chromo.gene[pos1] = chromo.gene[pos2];
+   chromo.gene[pos2] = buffer;
 }				/* -----  end of function bubble  ----- */

@@ -69,31 +69,29 @@ evaluate_extra_shifts (Chromosome chromo, unsigned worker)
 {
   unsigned value = 0;
   unsigned power = 0;
-  unsigned base  = 1;
   unsigned together = 0;
+  unsigned base = get_shift_base(chromo);
   worker %= chromo.width;
-  while (base < chromo.length - goals[shift_week_idx].value)
-     base <<= 1;
 
   for (int day = 0; day < chromo.length; day++)
-    if (is_working (chromo.gene[day], worker))
-    {
-       together++;
-       if (together > goals[shift_week_idx].value)
-	  if (power)
-	     power *= base;
-	  else
-	     power = 1;
-    }
-    else
-    {
-       if (together > goals[shift_week_idx].value)
-	  value += power;
-       together = 0;
-       power = 0;
-    }
+     if (is_working (chromo.gene[day], worker))
+     {
+	together++;
+	if (together > goals[shift_week_idx].value)
+	   if (power)
+	      power *= base;
+	   else
+	      power = 1;
+     }
+     else
+     {
+	if (together > goals[shift_week_idx].value)
+	   value += power;
+	together = 0;
+	power = 0;
+     }
 
-     value += power;
+  value += power;
 
   return value;
 }				/* -----  end of function evaluate_long_shifts  ----- */
@@ -136,11 +134,8 @@ evaluate_consecutive_weekends (Chromosome chromo, unsigned worker)
 {
    unsigned value = 0;
    unsigned power = 0;
-   unsigned base  = 1;
-   unsigned mww   = chromo.length / WEEK + 1;
+   unsigned base  = get_consweekend_base(chromo);
 
-   while (base < mww)
-      base <<= 1;
    worker %= chromo.width;
 
    for (int day = SATURDAY; day + 1 < chromo.length; day += WEEK)
@@ -214,17 +209,13 @@ evaluate_defect_staff_number (Chromosome chromo)
 punish_long_shifts (Chromosome chromo)
 {
    unsigned penalty = 0;
-   unsigned base    = 1;
-   
-   
-  while (base < chromo.length - goals[shift_week_idx].value)
-     base <<= 1;
+   unsigned base    = get_shift_base(chromo);
 
-  for (unsigned worker=0; worker<chromo.width; worker++)
-     for(unsigned extra_shifts = chromo.summary.extra_shifts[worker], n=1; extra_shifts>0; extra_shifts /= base, n++)
-	penalty += (extra_shifts % base) * penalty_points[shift_week_extra_penalty_idx].value * n;
+   for (unsigned worker=0; worker<chromo.width; worker++)
+      for(unsigned extra_shifts = chromo.summary.extra_shifts[worker], n=1; extra_shifts>0; extra_shifts /= base, n++)
+	 penalty += (extra_shifts % base) * penalty_points[shift_week_extra_penalty_idx].value * n;
 
-  return penalty;
+   return penalty;
 }				/* -----  end of function punish_long_shifts  ----- */
 
 
@@ -264,11 +255,11 @@ punish_halving_weekends (Chromosome chromo)
 {
    unsigned penalty = 0;
 
-   
+
    for (unsigned worker=0; worker<chromo.width; worker++)
-	 penalty +=
+      penalty +=
 	 chromo.summary.weekends_halved[worker] *
-	    penalty_points[halving_weekend_penalty_idx].value;
+	 penalty_points[halving_weekend_penalty_idx].value;
 
    return penalty;
 }				/* -----  end of function punish_halving_weekends  ----- */
@@ -285,11 +276,7 @@ punish_consecutive_weekends (Chromosome chromo)
    unsigned acum = 0;
    unsigned penalty = 0;
    unsigned power = 0;
-   unsigned base  = 1;
-   unsigned mww   = chromo.length / WEEK + 1;
-
-   while (base < mww)
-      base <<= 1;
+   unsigned base  = get_consweekend_base(chromo);
 
    for (unsigned worker=0; worker<chromo.width; worker++)
       for(unsigned cw = chromo.summary.consecutive_weekends[worker], n=1; cw > 0; cw /= base, n++)

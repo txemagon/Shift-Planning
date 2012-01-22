@@ -243,6 +243,7 @@ main (int argc, char *argv[])
 
   analyze_aptitude (&(population.person[0]));
   show_chromosome (population.person[0]);
+  display_summaries (population.person[0]);
   display_penalties (population.person[0]);
   deallocate_pop (population);
 

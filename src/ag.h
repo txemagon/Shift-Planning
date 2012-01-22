@@ -85,7 +85,7 @@ struct Summary
   unsigned *extra_shifts;	/* Separate penalties by worker */
   unsigned *weekends_halved;
   unsigned *consecutive_weekends;
-  unsigned *weekends;
+  unsigned *weekends;		/* Amount of free weekends */
   unsigned *freedays;
   unsigned mutations;
 };				/* ----------  end of struct Penalty  ---------- */

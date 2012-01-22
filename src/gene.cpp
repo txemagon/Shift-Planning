@@ -60,6 +60,34 @@ people_working (unsigned gene)
 
 /* 
  * ===  FUNCTION  ======================================================================
+ *         Name:  display_amounts
+ *  Description:  decompose a times-amount formated unsigned and returns it as a string.
+ *                buffer must have enough space to host the respond.
+ * =====================================================================================
+ */
+   char *
+display_amounts ( char *buffer, unsigned value, unsigned base )
+{
+   unsigned pos   = 1;
+   char number_str[10];
+   buffer[0] = '\0';
+
+   do{
+      strcat(buffer, "\twidth ");
+      sprintf(number_str, "%i", pos);
+      strcat(buffer, number_str);
+      strcat(buffer, " (");
+      sprintf(number_str, "%i", value % base);
+      strcat(buffer, number_str);
+      strcat(buffer, " times)\n");
+      pos++;
+   }while( value /= base);
+
+   return buffer;
+}		/* -----  end of function display_amounts  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
  *         Name:  rotate_gene
  *  Description:  rotates a gene to the left for positive values of the places param. 
  * =====================================================================================
