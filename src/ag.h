@@ -91,7 +91,8 @@ struct Summary
 };				/* ----------  end of struct Penalty  ---------- */
 typedef struct Summary Summary;
 
-struct Penalty{
+struct Penalty
+{
   unsigned bad_staff_number;
   unsigned different_weekend_number;
   unsigned different_free_days;

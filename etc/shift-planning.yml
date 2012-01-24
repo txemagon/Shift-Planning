@@ -23,7 +23,7 @@ extra_people_penalty: 4                 # Ensure the correct crew
 work_load_penalty: 4                    # Go to work_load
 
 # Inner Working
-generations: 50000              # Number of generations
+generations: 200000              # Number of generations
 population:  400                # Population in each generation
-cross_rate: 10                  # Probability of crossing part of a chromosome in a copy
+cross_rate:  25                 # Probability of crossing part of a chromosome in a copy
                                 # P = 1 / cross_rate

@@ -27,17 +27,20 @@
 #include "screen.h"
 
 
+#define		PAST	10	/* remember the success of a mutator during 10 changes */
+int mutation_memory[MUT_NB][PAST];
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  mutate_chromo
- *  Description:  
+ *  Description:  Performs random mutations inside a chromosome. 
  * =====================================================================================
  */
 void
-mutate_chromo (Chromosome chromo)
+mutate_chromo (Chromosome * chromo)
 {
-   for (int i=rand() %10; i>0; i--)
-      mutator[rand () % MUT_NB] (chromo);
+  mutator[rand () % MUT_NB] (*chromo);
+  chromo->summary.mutations++;
 }				/* -----  end of function mutate_chromo  ----- */
 
 /* 
@@ -46,35 +49,36 @@ mutate_chromo (Chromosome chromo)
  *  Description:  Generates a whole generation and returns the best score rate.  
  * =====================================================================================
  */
-   unsigned
+unsigned
 mutate_generation (Population population)
 {
 
-   int chromos = population.length;
-   for (int i = 1; i < chromos; i++)
-      mutate_chromo (population.person[i]);
+  int chromos = population.length;
+  for (int i = 1; i < chromos; i++)
+    mutate_chromo (&population.person[i]);
 
-   fix_staff (population);
-   check_aptitude (population);
-   sort_by_penalty (population);
+  fix_staff (population);
+  check_aptitude (population);
+  sort_by_penalty (population);
 
 
-   // Procreate 
-   unsigned position = 21;
-   for (unsigned b = 0; b < 20; b++)
-      while (position < population.length)
+  // Procreate 
+  unsigned position = 21;
+  for (unsigned b = 0; b < 20; b++)
+    while (position < population.length)
       {
-	 for (unsigned times = 0;
-	       times < 20 - b && position < population.length;
-	       times++, position++)
-	 {
+	for (unsigned times = 0;
+	     times < 20 - b && position < population.length;
+	     times++, position++)
+	  {
 	    copy (population, position, b);
-	    if (rand () % inner_working[cross_rate_idx].value == 1)
-	       cross (population.person[position],
+	    if (inner_working[cross_rate_idx].value
+		&& rand () % inner_working[cross_rate_idx].value == 1)
+	      cross (population.person[position],
 		     population.person[1 + rand () % (position - 1)]);
-	 }
+	  }
       }
 
 
-   return population.person[0].penalty_sum;
+  return population.person[0].penalty_sum;
 }				/* -----  end of function mutate_generation  ----- */

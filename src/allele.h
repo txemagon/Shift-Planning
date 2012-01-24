@@ -33,7 +33,7 @@ void random_rotate_gene (Chromosome chromo);
 void random_shift (Chromosome chromo);
 void interchain (Chromosome chromo);
 void bubble_gene (Chromosome chromo);
-unsigned get_shift_base (Chromosome chromo );
-unsigned get_consweekend_base (Chromosome chromo );
+unsigned get_shift_base (Chromosome chromo);
+unsigned get_consweekend_base (Chromosome chromo);
 
 #endif /* ----- #ifndef ALLELE_H  ----- */

@@ -65,26 +65,28 @@ people_working (unsigned gene)
  *                buffer must have enough space to host the respond.
  * =====================================================================================
  */
-   char *
-display_amounts ( char *buffer, unsigned value, unsigned base )
+char *
+display_amounts (char *buffer, unsigned value, unsigned base)
 {
-   unsigned pos   = 1;
-   char number_str[10];
-   buffer[0] = '\0';
+  unsigned pos = 1;
+  char number_str[10];
+  buffer[0] = '\0';
 
-   do{
-      strcat(buffer, "\twidth ");
-      sprintf(number_str, "%i", pos);
-      strcat(buffer, number_str);
-      strcat(buffer, " (");
-      sprintf(number_str, "%i", value % base);
-      strcat(buffer, number_str);
-      strcat(buffer, " times)\n");
+  do
+    {
+      strcat (buffer, "\twidth ");
+      sprintf (number_str, "%i", pos);
+      strcat (buffer, number_str);
+      strcat (buffer, " (");
+      sprintf (number_str, "%i", value % base);
+      strcat (buffer, number_str);
+      strcat (buffer, " times)\n");
       pos++;
-   }while( value /= base);
+    }
+  while (value /= base);
 
-   return buffer;
-}		/* -----  end of function display_amounts  ----- */
+  return buffer;
+}				/* -----  end of function display_amounts  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -187,3 +189,17 @@ xchg_workers (unsigned gene, unsigned worker1, unsigned worker2)
 
   return gene;
 }				/* -----  end of function xchg_workers  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  inspect_gene
+ *  Description: returns a viewable decomposure of an unsigned gene. 
+ * =====================================================================================
+ */
+char *
+inspect_gene (char *output, unsigned gene, unsigned width)
+{
+  for (unsigned w = 0; w < width; w++)
+    sprintf (output + w, "%u", ! !(gene & (1 << w)));
+  return output;
+}				/* -----  end of function inspect_gene  ----- */

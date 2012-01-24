@@ -20,15 +20,18 @@
 #define  MUTATION_CONTROLLER_PRIVATE_H
 
 
-#define		MUT_NB	6	/* Number of mutators  */
+#define		MUT_NB	1	/* Number of mutators  */
 
 #include "chromosomal.h"
 #include "allele.h"
 
 void (*mutator[]) (Chromosome chromo) =
 {
-mutation_gene,
-    random_wknd_gene,
-    random_rotate_gene, random_shift, interchain, bubble_gene};
+  // mutation_gene,
+  // random_wknd_gene,
+  //  random_rotate_gene, 
+  //random_shift, 
+  // interchain, 
+bubble_gene};
 
 #endif /* ----- #ifndef MUTATION_CONTROLLER_PRIVATE_H  ----- */
