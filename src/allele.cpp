@@ -277,10 +277,10 @@ interchain (Chromosome chromo)
   for (unsigned day = 0; day < WEEK - 2; day++)
     {
       buffer <<= 1;
-      buffer |= ! !(chromo.gene[start1 + day] & mask1);
+      buffer |= !!(chromo.gene[start1 + day] & mask1);
       chromo.gene[start1 + day] &= (~mask1);
       chromo.gene[start1 + day] |=
-	(! !(mask2 & chromo.gene[start2 + day]) << worker1);
+	(!!(mask2 & chromo.gene[start2 + day]) << worker1);
       chromo.gene[start2 + day] &= 0xFFFFFFFF ^ (1 << worker2);
       chromo.gene[start2 + day] |= (buffer & 1) << worker2;
     }
