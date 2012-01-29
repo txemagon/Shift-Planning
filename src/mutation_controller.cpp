@@ -25,10 +25,20 @@
 #include "gene.h"
 #include "allele.h"
 #include "screen.h"
+#include "mutators.h"
 
 
-#define		PAST	10	/* remember the success of a mutator during 10 changes */
-int mutation_memory[MUT_NB][PAST];
+void (*mutator[]) (Chromosome chromo) =
+{ // random_wknd_gene,
+  NULL,
+  mutation_gene,                
+  random_rotate_gene,           
+  random_shift, 
+  interchain, 
+  bubble_gene
+};
+
+unsigned mutator_elements = sizeof(mutator) / sizeof(void (*) (Chromosome ));
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -39,7 +49,7 @@ int mutation_memory[MUT_NB][PAST];
 void
 mutate_chromo (Chromosome * chromo)
 {
-  mutator[rand () % MUT_NB] (*chromo);
+  mutator_exec(random_verb(), *chromo);
   chromo->summary.mutations++;
 }				/* -----  end of function mutate_chromo  ----- */
 

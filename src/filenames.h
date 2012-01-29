@@ -22,5 +22,6 @@
 
 
 #define		CONFIG_FILE	"../etc/shift-planning.yml"	/* Params for each run  */
+#define		PENALTY_LOG_FILE	"../log/shift-planning/penalties.log"	/* Params for each run  */
 
 #endif /* ----- #ifndef FILENAMES_H  ----- */

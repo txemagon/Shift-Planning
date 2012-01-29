@@ -25,5 +25,6 @@ work_load_penalty: 4                    # Go to work_load
 # Inner Working
 generations: 200000              # Number of generations
 population:  400                # Population in each generation
+mutation_length: 2              # Verb. Number of maximum mutators applied together
 cross_rate:  25                 # Probability of crossing part of a chromosome in a copy
                                 # P = 1 / cross_rate

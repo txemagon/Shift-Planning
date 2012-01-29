@@ -3,7 +3,7 @@
  *
  *       Filename:  mutators.cpp
  *
- *    Description:  Manage a list of compound mutators.
+ *    Description:  Manages a list of compound mutators.
  *
  *        Version:  1.0
  *        Created:  25/01/12 09:54:23
@@ -16,81 +16,60 @@
  * =====================================================================================
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "ag.h"
+#include "globals.h"
 #include "mutation_controller_private.h"
+#include "chromosomal.h"
 
-#define		MUT_LEN	5	/* Maximum Length of the compound mutator */
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  create_verb
- *  Description:  Initializes a verb
- * =====================================================================================
- */
-Verb
-create_verb (Verb * verb)
-{
-  verb->length = 0;
-  verb->mutator_word = NULL;
-
-  return *verb;
-}				/* -----  end of function create_verb  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  delete_verb
- *  Description:  Frees the memory occupied by a verb
+ *         Name:  power
+ *  Description:  Recursive power calculation.
  * =====================================================================================
  */
-void
-delete_verb (Verb * verb)
-{
-  verb->length = 0;
-  free (verb->mutator_word);
-}				/* -----  end of function delete_verb  ----- */
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  add_mutator
- *  Description: Allocates a new mutator (pointer to a mutator func) inside a verb.  
- * =====================================================================================
- */
-void
-add_mutator (void (*new_mutator) (Chromosome chromo), Verb * place)
-{
-  place->mutator_word =
-    (void (**)(Chromosome)) realloc (place->mutator_word,
-				     sizeof (void (*)(Chromosome)) *
-				     (place->length + 1));
-  place->mutator_word[place->length] = new_mutator;
-  place->length++;
-}				/* -----  end of function add_mutator  ----- */
-
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  repeated_variations
- *  Description:  Number of variations with repetition 
- * =====================================================================================
- */
-long long int
-repeated_variations (unsigned elements, unsigned positions)
-{
-  if (positions <= 0)
+int power(int base, int exponent){
+  if (exponent <= 0)
     return 1;
-  return elements * repeated_variations (elements, positions - 1);
-}				/* -----  end of function repeated_variations  ----- */
+  return base*power(base, exponent-1);
+}				/* -----  end of function power  ----- */
+
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  generate_mutators
- *  Description:  Creates a list of compound mutators
+ *         Name:  mutator_exec
+ *  Description:  Execute a compund mutator (verb)
  * =====================================================================================
  */
-void
-generate_mutators ()
-{
-  unsigned max_var = MUT_LEN;
-  return;
-}				/* -----  end of function generate_mutators  ----- */
+void mutator_exec(unsigned verb, Chromosome chromo){
+  int nb_of_mutators = mutator_elements; 
+  int base = nb_of_mutators;
+  int index;
+  
+  while(verb>0){
+    index = verb % base;
+    if (mutator[index])
+      mutator[index](chromo);
+    verb /= base;
+  }
+
+}				/* -----  end of function mutator_exec  ----- */
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  random_verb
+ *  Description:  Create a random verb
+ * =====================================================================================
+ */
+unsigned random_verb(){
+  int nb_of_mutators = mutator_elements;
+  int base = nb_of_mutators;
+  int max = power(base, inner_working[mutation_length_idx].value );
+
+  return rand() % max;
+}				/* -----  end of function random_verb  ----- */
+

@@ -76,6 +76,9 @@ ConfigIntVar inner_working[] = {
   {"population", POPULATION}
   ,
   {"cross_rate", CROSS_RATE}
+  ,
+  {"mutation_length", MUT_LEN}
+
 };
 
 

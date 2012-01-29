@@ -46,6 +46,7 @@
 
 #define	CROSS_RATE	10	/* Cross probability = 1 / CROSS_RATE */
 #define	GENERATIONS	9994484	/* Number of generations to compute */
+#define	MUT_LEN 	2	/* Maximum Length of the compound mutator */
 
 #define	MAX_KEY		0x100	/* Maximum length of yaml keys  */
 
@@ -73,7 +74,7 @@ enum Penalty_points_idx
   work_load_penalty_idx
 };
 enum Inner_working_idx
-{ generations_idx, population_idx, cross_rate_idx };
+{ generations_idx, population_idx, cross_rate_idx, mutation_length_idx };
 
 enum TWorking
 { working, off_work };

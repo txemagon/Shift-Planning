@@ -20,24 +20,5 @@
 #define  MUTATION_CONTROLLER_PRIVATE_H
 
 
-#define		MUT_NB	5	/* Number of mutators  */
-
-#include "chromosomal.h"
-#include "allele.h"
-
-void (*mutator[]) (Chromosome chromo) =
-{
-  mutation_gene,
-    // random_wknd_gene,
-random_rotate_gene, random_shift, interchain, bubble_gene};
-
-struct Verb
-{
-  int length;
-  void (**mutator_word) (Chromosome chromo);
-};
-
-typedef struct Verb Verb;
-
 
 #endif /* ----- #ifndef MUTATION_CONTROLLER_PRIVATE_H  ----- */

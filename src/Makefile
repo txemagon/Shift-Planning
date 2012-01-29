@@ -2,7 +2,7 @@ SHELL = /bin/bash
 CC = g++
 CXXFLAGS = -g 
 
-OBJECTS =  main.o mutation_controller.o screen.o chromosomal.o allele.o gene.o manage_time.o
+OBJECTS =  main.o mutation_controller.o screen.o chromosomal.o allele.o gene.o manage_time.o mutators.o
 
 plan-shifts : $(OBJECTS)
 	$(CC) $(CFLAGS) -o $@ $(OBJECTS) -lyaml
@@ -12,6 +12,7 @@ mutation_controller.o : manage_time.o allele.h gene.h mutation_controller_privat
 screen.o : manage_time.h ag.h gene.h chromosomal.h allele.h
 chromosomal.o : manage_time.h allele.h gene.h ag.h 
 manage_time.o : manage_time.h 
+mutators.o    : chromosomal.h
 
 .PHONY : clean indent copy release
 
