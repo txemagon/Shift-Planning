@@ -29,16 +29,11 @@
 
 
 void (*mutator[]) (Chromosome chromo) =
-{ // random_wknd_gene,
-  NULL,
-  mutation_gene,                
-  random_rotate_gene,           
-  random_shift, 
-  interchain, 
-  bubble_gene
-};
+{				// random_wknd_gene,
+NULL,
+    mutation_gene, random_rotate_gene, random_shift, interchain, bubble_gene};
 
-unsigned mutator_elements = sizeof(mutator) / sizeof(void (*) (Chromosome ));
+unsigned mutator_elements = sizeof (mutator) / sizeof (void (*)(Chromosome));
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -49,7 +44,7 @@ unsigned mutator_elements = sizeof(mutator) / sizeof(void (*) (Chromosome ));
 void
 mutate_chromo (Chromosome * chromo)
 {
-  mutator_exec(random_verb(), *chromo);
+  mutator_exec (random_verb (), *chromo);
   chromo->summary.mutations++;
 }				/* -----  end of function mutate_chromo  ----- */
 

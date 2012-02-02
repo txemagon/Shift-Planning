@@ -31,10 +31,12 @@
  *  Description:  Recursive power calculation.
  * =====================================================================================
  */
-int power(int base, int exponent){
+int
+power (int base, int exponent)
+{
   if (exponent <= 0)
     return 1;
-  return base*power(base, exponent-1);
+  return base * power (base, exponent - 1);
 }				/* -----  end of function power  ----- */
 
 
@@ -44,17 +46,20 @@ int power(int base, int exponent){
  *  Description:  Execute a compund mutator (verb)
  * =====================================================================================
  */
-void mutator_exec(unsigned verb, Chromosome chromo){
-  int nb_of_mutators = mutator_elements; 
+void
+mutator_exec (unsigned verb, Chromosome chromo)
+{
+  int nb_of_mutators = mutator_elements;
   int base = nb_of_mutators;
   int index;
-  
-  while(verb>0){
-    index = verb % base;
-    if (mutator[index])
-      mutator[index](chromo);
-    verb /= base;
-  }
+
+  while (verb > 0)
+    {
+      index = verb % base;
+      if (mutator[index])
+	mutator[index] (chromo);
+      verb /= base;
+    }
 
 }				/* -----  end of function mutator_exec  ----- */
 
@@ -65,11 +70,12 @@ void mutator_exec(unsigned verb, Chromosome chromo){
  *  Description:  Create a random verb
  * =====================================================================================
  */
-unsigned random_verb(){
+unsigned
+random_verb ()
+{
   int nb_of_mutators = mutator_elements;
   int base = nb_of_mutators;
-  int max = power(base, inner_working[mutation_length_idx].value );
+  int max = power (base, inner_working[mutation_length_idx].value);
 
-  return rand() % max;
+  return rand () % max;
 }				/* -----  end of function random_verb  ----- */
-

@@ -35,5 +35,7 @@ void interchain (Chromosome chromo);
 void bubble_gene (Chromosome chromo);
 unsigned get_shift_base (Chromosome chromo);
 unsigned get_consweekend_base (Chromosome chromo);
+vector < TimeInterval > &get_bad_shifts (Chromosome chromo, unsigned worker,
+					 vector < TimeInterval > &list);
 
 #endif /* ----- #ifndef ALLELE_H  ----- */

@@ -16,11 +16,14 @@
  * =====================================================================================
  */
 #include <stdlib.h>
+#include <vector>
 
 #include "manage_time.h"
 #include "ag.h"
 #include "globals.h"
 #include "gene.h"
+
+using namespace std;
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -96,6 +99,45 @@ get_total_weekends (Chromosome chromo, unsigned worker)
   return total;
 }				/* -----  end of function get_total_freedays  ----- */
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  get_bad_shifts
+ *  Description:  Writes a list of the long shifts
+ * =====================================================================================
+ */
+vector < TimeInterval > &get_bad_shifts (Chromosome chromo, unsigned worker,
+					 vector < TimeInterval > &list)
+{
+  unsigned together = 0;
+  bool interval = false;
+
+  for (unsigned day = 0; day < chromo.length; day++)
+    if (is_working (chromo.gene[day], worker))
+      {
+	together++;
+	if (together == goals[shift_week_idx].value + 1)
+	  interval = true;
+      }
+    else
+      {
+	if (interval)
+	  {
+	    list.push_back (TimeInterval (day - together, day - 1));
+	    interval = false;
+	  }
+	together = 0;
+      }
+  unsigned day = chromo.length - 1;
+  if (interval)
+    {
+      list.push_back (TimeInterval (day - together, day - 1));
+      interval = false;
+    }
+
+
+  return list;
+}				/* -----  end of function get_bad_shifts  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -193,18 +235,18 @@ mutation_gene (Chromosome chromo)
 
   chromo.gene[position] =
     random_gene (chromo.width, goals[staff_number_ix].value);
-/*
-   if (position % WEEK == SATURDAY + 1)
-      position--;
-   if (position % WEEK == SATURDAY)
-   {
-      unsigned random_shift = random_gene (chromo.width, SNW);
-      chromo.gene[position] = random_shift;
-      chromo.gene[position + 1] = random_shift;
-   }
-   else
-      chromo.gene[position] = random_gene (chromo.width, SN);
-*/
+  /*
+     if (position % WEEK == SATURDAY + 1)
+     position--;
+     if (position % WEEK == SATURDAY)
+     {
+     unsigned random_shift = random_gene (chromo.width, SNW);
+     chromo.gene[position] = random_shift;
+     chromo.gene[position + 1] = random_shift;
+     }
+     else
+     chromo.gene[position] = random_gene (chromo.width, SN);
+   */
 }				/* -----  end of function mutation_gene  ----- */
 
 
@@ -277,10 +319,10 @@ interchain (Chromosome chromo)
   for (unsigned day = 0; day < WEEK - 2; day++)
     {
       buffer <<= 1;
-      buffer |= !!(chromo.gene[start1 + day] & mask1);
+      buffer |= ! !(chromo.gene[start1 + day] & mask1);
       chromo.gene[start1 + day] &= (~mask1);
       chromo.gene[start1 + day] |=
-	(!!(mask2 & chromo.gene[start2 + day]) << worker1);
+	(! !(mask2 & chromo.gene[start2 + day]) << worker1);
       chromo.gene[start2 + day] &= 0xFFFFFFFF ^ (1 << worker2);
       chromo.gene[start2 + day] |= (buffer & 1) << worker2;
     }

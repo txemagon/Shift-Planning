@@ -19,7 +19,7 @@
 #ifndef  MUTATORS_H
 #define  MUTATORS_H
 
-void mutator_exec(unsigned verb, Chromosome chromo);
-unsigned random_verb();
+void mutator_exec (unsigned verb, Chromosome chromo);
+unsigned random_verb ();
 
-#endif   /* ----- #ifndef MUTATORS_H  ----- */
+#endif /* ----- #ifndef MUTATORS_H  ----- */

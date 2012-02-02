@@ -19,6 +19,7 @@
 #ifndef  AG_H
 #define  AG_H
 
+#include <vector>
 #include "manage_time.h"
 
 #define		PAUSE	8	/* Pause after writing status */
@@ -50,6 +51,20 @@
 
 #define	MAX_KEY		0x100	/* Maximum length of yaml keys  */
 
+using namespace std;
+
+struct TimeInterval
+{
+  unsigned day_start;		/* Both days included */
+  unsigned day_end;
+    TimeInterval (unsigned start, unsigned end)
+  {
+    day_start = start;
+    day_end = end;
+  }
+};				/* ----------  end of struct TimeInterval  ---------- */
+typedef struct TimeInterval TimeInterval;
+
 struct ConfigIntVar
 {
   const char name[MAX_KEY];
@@ -59,8 +74,10 @@ typedef struct ConfigIntVar ConfigIntVar;
 
 enum Problem_idx
 { workers_idx, period_idx, shift_length_idx };
+
 enum Goals_idx
 { shift_week_idx, staff_number_ix, staff_weekend_number_idx, work_load_idx };
+
 enum Penalty_points_idx
 {
   shift_week_extra_penalty_idx,
@@ -73,6 +90,7 @@ enum Penalty_points_idx
   extra_people_penalty_idx,
   work_load_penalty_idx
 };
+
 enum Inner_working_idx
 { generations_idx, population_idx, cross_rate_idx, mutation_length_idx };
 
@@ -83,11 +101,12 @@ struct Summary
 {
   unsigned extra_staff_number;
   unsigned defect_staff_number;
-  unsigned *extra_shifts;	/* Separate penalties by worker */
+  unsigned long *extra_shifts;	/* Separate penalties by worker */
   unsigned *weekends_halved;
   unsigned *consecutive_weekends;
   unsigned *weekends;		/* Amount of free weekends */
   unsigned *freedays;
+    vector < TimeInterval > *wrong_shifts;
   unsigned mutations;
 };				/* ----------  end of struct Penalty  ---------- */
 typedef struct Summary Summary;

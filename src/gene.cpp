@@ -36,7 +36,7 @@
 unsigned
 is_working (unsigned gene, unsigned worker)
 {
-  return !!(gene & (1 << worker));
+  return ! !(gene & (1 << worker));
 }				/* -----  end of function is_working  ----- */
 
 /* 
@@ -200,6 +200,6 @@ char *
 inspect_gene (char *output, unsigned gene, unsigned width)
 {
   for (unsigned w = 0; w < width; w++)
-    sprintf (output + w, "%u", !!(gene & (1 << w)));
+    sprintf (output + w, "%u", ! !(gene & (1 << w)));
   return output;
 }				/* -----  end of function inspect_gene  ----- */

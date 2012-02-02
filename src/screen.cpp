@@ -64,11 +64,11 @@ clear_summary (Population population)
  *                evaluate_consecutive_weekends below for further information.
  * =====================================================================================
  */
-unsigned
+unsigned long
 evaluate_extra_shifts (Chromosome chromo, unsigned worker)
 {
-  unsigned value = 0;
-  unsigned power = 0;
+  unsigned long value = 0;
+  unsigned long power = 0;
   unsigned together = 0;
   unsigned base = get_shift_base (chromo);
   worker %= chromo.width;
@@ -95,6 +95,7 @@ evaluate_extra_shifts (Chromosome chromo, unsigned worker)
 
   return value;
 }				/* -----  end of function evaluate_long_shifts  ----- */
+
 
 
 /* 
@@ -211,8 +212,9 @@ punish_long_shifts (Chromosome chromo)
   unsigned base = get_shift_base (chromo);
 
   for (unsigned worker = 0; worker < chromo.width; worker++)
-    for (unsigned extra_shifts = chromo.summary.extra_shifts[worker], n = 1;
-	 extra_shifts > 0; extra_shifts /= base, n++)
+    for (unsigned long extra_shifts =
+	 chromo.summary.extra_shifts[worker], n = 1; extra_shifts > 0;
+	 extra_shifts /= base, n++)
       penalty +=
 	(extra_shifts % base) *
 	penalty_points[shift_week_extra_penalty_idx].value * n;
