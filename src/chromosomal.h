@@ -29,5 +29,6 @@ void fix_staff (Population population);
 void cross (Chromosome chromo1, Chromosome chromo2);
 void display_penalties (Chromosome chromo);
 void display_summaries (Chromosome chromo);
+void hash_chromosome ( Chromosome chromosome );
 
 #endif

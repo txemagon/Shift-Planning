@@ -4,51 +4,75 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-CONS_WE_PENAL	chromosomal.cpp	64;"	d	file:
-FREEDAY_PENAL	chromosomal.cpp	66;"	d	file:
-INDIV_PENAL	chromosomal.cpp	61;"	d	file:
-LONG_SH_PENAL	chromosomal.cpp	62;"	d	file:
-WEEKEND_PENAL	chromosomal.cpp	65;"	d	file:
-WEEK_HA_PENAL	chromosomal.cpp	63;"	d	file:
+MAX_TRANSLATION	chromosomal.cpp	34;"	d	file:
 analyze_aptitude	screen.cpp	/^analyze_aptitude (Chromosome * chromo)$/;"	f
-bubble_gene	chromosomal.cpp	/^bubble_gene ( Chromosome chromo )$/;"	f
+bubble_gene	allele.cpp	/^bubble_gene (Chromosome chromo)$/;"	f
 check_aptitude	screen.cpp	/^check_aptitude (Population population)$/;"	f
-clear_penalties	screen.cpp	/^clear_penalties (Population population)$/;"	f
+clear_summary	screen.cpp	/^clear_summary (Population population)$/;"	f
 copy	chromosomal.cpp	/^copy (Population population, unsigned dest, unsigned src)$/;"	f
 create_initial_population	chromosomal.cpp	/^create_initial_population (unsigned workers, unsigned period,$/;"	f
 cross	chromosomal.cpp	/^cross (Chromosome chromo1, Chromosome chromo2)$/;"	f
 deallocate_pop	chromosomal.cpp	/^deallocate_pop (Population population)$/;"	f
+display_amounts	gene.cpp	/^display_amounts (char *buffer, unsigned value, unsigned base)$/;"	f
+display_long_shifts	chromosomal.cpp	/^display_long_shifts (Chromosome chromo, unsigned worker)$/;"	f
 display_penalties	chromosomal.cpp	/^display_penalties (Chromosome chromo)$/;"	f
+display_summaries	chromosomal.cpp	/^display_summaries (Chromosome chromo)$/;"	f
+display_working_free_days	chromosomal.cpp	/^display_working_free_days (Chromosome chromo, unsigned worker)$/;"	f
+evaluate_consecutive_weekends	screen.cpp	/^evaluate_consecutive_weekends (Chromosome chromo, unsigned worker)$/;"	f
+evaluate_defect_staff_number	screen.cpp	/^evaluate_defect_staff_number (Chromosome chromo)$/;"	f
+evaluate_extra_shifts	screen.cpp	/^evaluate_extra_shifts (Chromosome chromo, unsigned worker)$/;"	f
+evaluate_extra_staff_number	screen.cpp	/^evaluate_extra_staff_number (Chromosome chromo)$/;"	f
+evaluate_weekends_halved	screen.cpp	/^evaluate_weekends_halved (Chromosome chromo, unsigned worker)$/;"	f
 ex_program	main.cpp	/^ex_program (int sig)$/;"	f
 exit_request	main.cpp	/^bool exit_request = false;$/;"	v
 first_day_of_week	manage_time.cpp	/^enum WeekDay first_day_of_week = monday;	\/* Default value *\/$/;"	v	typeref:enum:WeekDay
 fix_staff	chromosomal.cpp	/^fix_staff (Population population)$/;"	f
+get_bad_shifts	allele.cpp	/^vector < TimeInterval > &get_bad_shifts (Chromosome chromo, unsigned worker,$/;"	f
+get_consweekend_base	allele.cpp	/^get_consweekend_base (Chromosome chromo)$/;"	f
 get_day	manage_time.cpp	/^get_day (int day_of_week)$/;"	f
-get_first_free_wknd_since	allele.cpp	/^get_first_free_wknd_since ( Chromosome chromo, unsigned worker, unsigned since_day )$/;"	f
+get_first_free_wknd_since	allele.cpp	/^get_first_free_wknd_since (Chromosome chromo, unsigned worker,$/;"	f
+get_free_working_days	allele.cpp	/^get_free_working_days ( Chromosome chromo, unsigned worker, vector<unsigned> &list )$/;"	f
+get_one_normal_day	allele.cpp	/^get_one_normal_day (unsigned length)$/;"	f
+get_shift_base	allele.cpp	/^get_shift_base (Chromosome chromo)$/;"	f
 get_total_freedays	allele.cpp	/^get_total_freedays (Chromosome chromo, unsigned worker)$/;"	f
 get_total_weekends	allele.cpp	/^get_total_weekends (Chromosome chromo, unsigned worker)$/;"	f
+goals	main.cpp	/^ConfigIntVar goals[] = {$/;"	v
 init_chromosome	chromosomal.cpp	/^init_chromosome (unsigned workers, unsigned period)$/;"	f
-interchain	chromosomal.cpp	/^interchain (Chromosome chromo)$/;"	f
+init_weekends	chromosomal.cpp	/^init_weekends (Chromosome chromo)$/;"	f
+inner_working	main.cpp	/^ConfigIntVar inner_working[] = {$/;"	v
+inspect_gene	gene.cpp	/^inspect_gene (char *output, unsigned gene, unsigned width)$/;"	f
+interchain	allele.cpp	/^interchain (Chromosome chromo)$/;"	f
+is_weekend	manage_time.cpp	/^is_weekend ( unsigned day )$/;"	f
 is_working	gene.cpp	/^is_working (unsigned gene, unsigned worker)$/;"	f
 is_working_the_weekend	allele.cpp	/^is_working_the_weekend (Chromosome chromo, unsigned worker, unsigned week)$/;"	f
+load_config_file	main.cpp	/^load_config_file ()$/;"	f
+lower_shift_stress	allele.cpp	/^lower_shift_stress ( Chromosome chromo )$/;"	f
 main	main.cpp	/^main (int argc, char *argv[])$/;"	f
-mutate_chromo	mutation_controller.cpp	/^mutate_chromo ( Chromosome chromo )$/;"	f
-mutate_generation	mutation_controller.cpp	/^mutate_generation ( Population population )$/;"	f
-mutation_gene	allele.cpp	/^mutation_gene (Chromosome chromo, unsigned position)$/;"	f
+mutate_chromo	mutation_controller.cpp	/^mutate_chromo (Chromosome * chromo)$/;"	f
+mutate_generation	mutation_controller.cpp	/^mutate_generation (Population population)$/;"	f
+mutation_gene	allele.cpp	/^mutation_gene (Chromosome chromo)$/;"	f
+mutator	mutation_controller.cpp	/^void (*mutator[]) (Chromosome chromo) =$/;"	v
+mutator_elements	mutation_controller.cpp	/^unsigned mutator_elements = sizeof (mutator) \/ sizeof (void (*)(Chromosome));$/;"	v
+mutator_exec	mutators.cpp	/^mutator_exec (unsigned verb, Chromosome chromo)$/;"	f
+penalty_points	main.cpp	/^ConfigIntVar penalty_points[] = {$/;"	v
 people_working	gene.cpp	/^people_working (unsigned gene)$/;"	f
 population	main.cpp	/^Population population;$/;"	v
+power	mutators.cpp	/^power (int base, int exponent)$/;"	f
+problem	main.cpp	/^ConfigIntVar problem[] = {$/;"	v
 punish_bad_staff_number	screen.cpp	/^punish_bad_staff_number (Chromosome chromo)$/;"	f
-punish_consecutive_weekends	screen.cpp	/^punish_consecutive_weekends (Chromosome chromo, unsigned worker)$/;"	f
+punish_consecutive_weekends	screen.cpp	/^punish_consecutive_weekends (Chromosome chromo)$/;"	f
 punish_different_free_days	screen.cpp	/^punish_different_free_days (Chromosome chromo)$/;"	f
 punish_different_weekend_number	screen.cpp	/^punish_different_weekend_number (Chromosome chromo)$/;"	f
-punish_halving_weekends	screen.cpp	/^punish_halving_weekends (Chromosome chromo, unsigned worker)$/;"	f
-punish_long_shifts	screen.cpp	/^punish_long_shifts (Chromosome chromo, unsigned worker)$/;"	f
-punish_work_load	screen.cpp	/^punish_work_load (Chromosome chromo, unsigned worker)$/;"	f
+punish_halving_weekends	screen.cpp	/^punish_halving_weekends (Chromosome chromo)$/;"	f
+punish_long_shifts	screen.cpp	/^punish_long_shifts (Chromosome chromo)$/;"	f
+punish_work_load	screen.cpp	/^punish_work_load (Chromosome chromo)$/;"	f
 random_gene	gene.cpp	/^random_gene (unsigned workers, unsigned ones)$/;"	f
-random_rotate_gene	allele.cpp	/^random_rotate_gene (Chromosome chromo, unsigned position)$/;"	f
-random_shift	chromosomal.cpp	/^random_shift (Chromosome chromo)$/;"	f
-random_wknd_gene	allele.cpp	/^random_wknd_gene (Chromosome chromo, unsigned position )$/;"	f
+random_rotate_gene	allele.cpp	/^random_rotate_gene (Chromosome chromo)$/;"	f
+random_shift	allele.cpp	/^random_shift (Chromosome chromo)$/;"	f
+random_verb	mutators.cpp	/^random_verb ()$/;"	f
+random_wknd_gene	allele.cpp	/^random_wknd_gene (Chromosome chromo)$/;"	f
 rotate_gene	gene.cpp	/^rotate_gene (unsigned gene, int places, unsigned width)$/;"	f
+set_global	main.cpp	/^set_global (const char *key, const char *value)$/;"	f
 set_worker	gene.cpp	/^set_worker (unsigned gene, unsigned worker, enum TWorking value)$/;"	f
 show_chromosome	chromosomal.cpp	/^show_chromosome (Chromosome chromosome)$/;"	f
 sort_by_penalty	chromosomal.cpp	/^sort_by_penalty (Population population)$/;"	f

@@ -31,7 +31,7 @@
 void (*mutator[]) (Chromosome chromo) =
 {				// random_wknd_gene,
 NULL,
-    mutation_gene, random_rotate_gene, random_shift, interchain, bubble_gene};
+    mutation_gene, random_rotate_gene, random_shift, interchain, bubble_gene, lower_shift_stress, exch_weekend };
 
 unsigned mutator_elements = sizeof (mutator) / sizeof (void (*)(Chromosome));
 

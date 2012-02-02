@@ -245,6 +245,7 @@ main (int argc, char *argv[])
 	    mutate_generation (population));
 
   analyze_aptitude (&(population.person[0]));
+  hash_chromosome(population.person[0]);
   show_chromosome (population.person[0]);
   display_summaries (population.person[0]);
   display_penalties (population.person[0]);

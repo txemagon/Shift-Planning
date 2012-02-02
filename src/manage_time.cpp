@@ -49,3 +49,15 @@ the_next_wekend_as_of (unsigned day, unsigned max)
     day = -1;
   return day;
 }				/* -----  end of function the_next_wekend_as_of  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  is_weekend
+ *  Description:  Returns true if the given day is a weekend
+ * =====================================================================================
+ */
+bool
+is_weekend ( unsigned day )
+{
+   return day % WEEK >= SATURDAY;
+}		/* -----  end of function is_weekend  ----- */

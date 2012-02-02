@@ -12,19 +12,19 @@ work_load: 375                  # In tenths of houur per week.
 shift_length: 70                # Daily tenths of hour.
 
 # Penalty points
-shift_week_extra_penalty: 2             # Punish working a lot of days together.
+shift_week_extra_penalty: 3             # Punish working a lot of days together.
 shift_week_defect_penalty: 1            # Punish interleaving holidays and work
 halving_weekend_penalty: 7              # Punish not giving the whole weekend
-weekend_injustice_penalty: 2            # Punish different number of weekends
-consecutive_weekend_injustice: 2        # Punish working one weekend after another
+weekend_injustice_penalty: 15           # Punish different number of weekends
+consecutive_weekend_injustice: 0        # Punish working one weekend after another
 bad_free_days_penalty: 1                # Ensure the same amount of free days
 few_people_penalty: 3                   # Ensure the correct crew
 extra_people_penalty: 4                 # Ensure the correct crew 
-work_load_penalty: 4                    # Go to work_load
+work_load_penalty: 1                    # Go to work_load
 
 # Inner Working
 generations: 200000              # Number of generations
-population:  400                # Population in each generation
-mutation_length: 2              # Verb. Number of maximum mutators applied together
-cross_rate:  25                 # Probability of crossing part of a chromosome in a copy
+population:  90                 # Population in each generation
+mutation_length: 1              # Verb. Number of maximum mutators applied together
+cross_rate:  100                # Probability of crossing part of a chromosome in a copy
                                 # P = 1 / cross_rate

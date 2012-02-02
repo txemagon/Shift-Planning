@@ -58,10 +58,45 @@ show_chromosome (Chromosome chromosome)
   free (shift);
 }				/* -----  end of function show_chromosome  ----- */
 
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  hash_chromosome
+ *  Description:  Prints the hex chromosome
+ * =====================================================================================
+ */
+   void
+hash_chromosome ( Chromosome chromosome )
+{
+  for (unsigned day = 0; day < chromosome.length; day++)
+     printf("%X", chromosome.gene[day]);
+
+  printf("\n");
+}		/* -----  end of function hash_chromosome  ----- */
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  display_working_free_days
+ *  Description:  Shows those free days outside the weekend
+ * =====================================================================================
+ */
+void
+display_working_free_days (Chromosome chromo, unsigned worker)
+{
+  vector < unsigned > list;
+  get_free_working_days (chromo, worker, list );
+  vector < unsigned >::const_iterator fd;
+  
+  printf("Free days outside weekend: ");
+  for (fd = list.begin (); fd != list.end (); fd++)
+    printf ("%2u ", *fd);
+  printf ("\n");
+}				/* -----  end of function display_working_free_days  ----- */
+
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  display_long_shifts
- *  Description:  Looks for long shifts 
+ *  Description:  Show long shifts 
  * =====================================================================================
  */
 void
@@ -70,6 +105,8 @@ display_long_shifts (Chromosome chromo, unsigned worker)
   vector < TimeInterval > &list =
     get_bad_shifts (chromo, worker, chromo.summary.wrong_shifts[worker]);
   vector < TimeInterval >::const_iterator shift;
+
+  printf("Long Shifts: ");
   for (shift = list.begin (); shift != list.end (); shift++)
     printf ("[%2u, %2u] ", shift->day_start, shift->day_end);
   printf ("\n");
@@ -103,7 +140,9 @@ display_summaries (Chromosome chromo)
 	      chromo.summary.weekends_halved[worker]);
       printf ("Free weekends: %u\n", chromo.summary.weekends[worker]);
       printf ("Free days: %u\n", chromo.summary.freedays[worker]);
+      printf ("Working Ratio: %.2lf\n", 1. * (chromo.length - chromo.summary.freedays[worker]) * problem[shift_length_idx]. value / goals[work_load_idx].value * WEEK / chromo.length );
       display_long_shifts (chromo, worker);
+      display_working_free_days (chromo, worker);
     }
 
 }				/* -----  end of function display_summaries()  ----- */
@@ -127,7 +166,7 @@ display_penalties (Chromosome chromo)
   printf ("Different free days: %u\n", chromo.penalty.different_free_days);
   printf ("Long Shifts: %u\n", chromo.penalty.long_shifts);
   printf ("Weekends Halved: %u\n", chromo.penalty.weekends_halved);
-  printf ("Consecutive Weekends: %u\n", chromo.penalty.consecutive_weekends);
+  // printf ("Consecutive Weekends: %u\n", chromo.penalty.consecutive_weekends);
 
 }				/* -----  end of function display_penalties  ----- */
 
@@ -343,10 +382,12 @@ cross (Chromosome chromo1, Chromosome chromo2)
   start2 = rand () % chromo2.length / WEEK;
   start1 *= WEEK;
   start2 *= WEEK;
+  /* 
   length =
     rand () % (unsigned) fmin (chromo1.length - start1,
 			       chromo2.length - start2);
-  length = WEEK;
+ */
+  length = WEEK - 2;
 
   buffer = (unsigned *) malloc (length * sizeof (unsigned));
   memcpy (buffer, &(chromo1.gene[start1]), length);

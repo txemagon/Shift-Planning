@@ -73,6 +73,7 @@ mutator_exec (unsigned verb, Chromosome chromo)
 unsigned
 random_verb ()
 {
+   static unsigned long long times = 0;
   int nb_of_mutators = mutator_elements;
   int base = nb_of_mutators;
   int max = power (base, inner_working[mutation_length_idx].value);

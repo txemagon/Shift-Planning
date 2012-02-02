@@ -377,7 +377,7 @@ analyze_aptitude (Chromosome * chromo)
   for (int w = 0; w < chromo->width; w++)
     {
       chromo->summary.extra_shifts[w] = evaluate_extra_shifts (*chromo, w);
-      // chromo->summary.weekends_halved[w] = evaluate_weekends_halved (*chromo, w);
+      chromo->summary.weekends_halved[w] = evaluate_weekends_halved (*chromo, w);
       // chromo->summary.consecutive_weekends[w] = evaluate_consecutive_weekends (*chromo, w);
       chromo->summary.weekends[w] = get_total_weekends (*chromo, w);
       chromo->summary.freedays[w] = get_total_freedays (*chromo, w);
@@ -409,22 +409,20 @@ check_aptitude (Population population)
       population.person[i].penalty_sum +=
 	population.person[i].penalty.bad_staff_number =
 	punish_bad_staff_number (population.person[i]);
-/*
+
 
       population.person[i].penalty_sum +=
 	 population.person[i].penalty.weekends_halved =
 	 punish_halving_weekends (population.person[i]);
 
+      /*
       population.person[i].penalty_sum +=
 	 population.person[i].penalty.consecutive_weekends =
 	 punish_consecutive_weekends (population.person[i]);
-
 */
-
       population.person[i].penalty_sum +=
 	population.person[i].penalty.different_weekend_number =
 	punish_different_weekend_number (population.person[i]);
-
 
       population.person[i].penalty_sum +=
 	population.person[i].penalty.work_load =

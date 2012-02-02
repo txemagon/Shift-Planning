@@ -37,5 +37,8 @@ unsigned get_shift_base (Chromosome chromo);
 unsigned get_consweekend_base (Chromosome chromo);
 vector < TimeInterval > &get_bad_shifts (Chromosome chromo, unsigned worker,
 					 vector < TimeInterval > &list);
+vector<unsigned> & get_free_working_days ( Chromosome chromo, unsigned worker, vector<unsigned> &list );
+void lower_shift_stress ( Chromosome chromo );
+void exch_weekend ( Chromosome chromo );
 
 #endif /* ----- #ifndef ALLELE_H  ----- */

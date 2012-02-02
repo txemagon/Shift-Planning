@@ -15,6 +15,7 @@
  *
  * =====================================================================================
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <vector>
 
@@ -135,9 +136,24 @@ vector < TimeInterval > &get_bad_shifts (Chromosome chromo, unsigned worker,
       interval = false;
     }
 
-
   return list;
 }				/* -----  end of function get_bad_shifts  ----- */
+
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  get_free_working_days
+ *  Description:  Fills a list with the weekends of a given worker.
+ * =====================================================================================
+ */
+ vector<unsigned> &
+get_free_working_days ( Chromosome chromo, unsigned worker, vector<unsigned> &list )
+{
+   for (unsigned day=0; day<chromo.length; day++)
+      if (!is_working(chromo.gene[day], worker) && !is_weekend(day))
+	 list.push_back(day);
+   return list;
+}		/* -----  end of function get_free_working_days  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -235,18 +251,7 @@ mutation_gene (Chromosome chromo)
 
   chromo.gene[position] =
     random_gene (chromo.width, goals[staff_number_ix].value);
-  /*
-     if (position % WEEK == SATURDAY + 1)
-     position--;
-     if (position % WEEK == SATURDAY)
-     {
-     unsigned random_shift = random_gene (chromo.width, SNW);
-     chromo.gene[position] = random_shift;
-     chromo.gene[position + 1] = random_shift;
-     }
-     else
-     chromo.gene[position] = random_gene (chromo.width, SN);
-   */
+
 }				/* -----  end of function mutation_gene  ----- */
 
 
@@ -346,3 +351,66 @@ bubble_gene (Chromosome chromo)
   chromo.gene[pos1] = chromo.gene[pos2];
   chromo.gene[pos2] = buffer;
 }				/* -----  end of function bubble  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  lower_shift_stress
+ *  Description:  Use one of the free working days to lower long shift penalty points.
+ * =====================================================================================
+ */
+   void
+lower_shift_stress ( Chromosome chromo )
+{
+   vector<unsigned> list;
+   vector<TimeInterval> interval;
+   unsigned insize;
+   unsigned freesize;
+   unsigned bad_interval;
+   unsigned freeday;
+   unsigned aux;
+   unsigned init, end, mid;
+   unsigned w= rand() % chromo.width;
+
+      get_bad_shifts (chromo, w, interval);
+      insize = interval.size();
+      if (insize){
+	 get_free_working_days(chromo, w, list);
+	 freesize = list.size();
+	 if (freesize){
+	    bad_interval = rand() % insize;
+	    init = interval[bad_interval].day_start;
+	    end = interval[bad_interval].day_end;
+	    do{
+	       mid =  init + rand() % (1 + end - init );
+	    }while(mid % WEEK >= SATURDAY);
+	    freeday = rand() % freesize;
+	    aux = chromo.gene[list[freeday]];
+	    chromo.gene[list[freeday]] = chromo.gene[mid];
+	    chromo.gene[mid] = aux;
+	 }
+      }
+}		/* -----  end of function lower_shift_stress  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  exch_weekend
+ *  Description:  Exchanges two weekends
+ * =====================================================================================
+ */
+   void
+exch_weekend ( Chromosome chromo )
+{
+   unsigned weekend1, weekend2;
+   unsigned aux;
+
+   weekend1 = rand() % chromo.length / WEEK;
+   do{
+      weekend2 = rand() % chromo.length / WEEK;
+   }while(weekend2 == weekend1);
+
+   for (unsigned off=0; off<2; off++){
+      aux = chromo.gene[weekend1*WEEK+off];
+      chromo.gene[weekend1*WEEK+off] = chromo.gene[weekend2*WEEK+off];
+      chromo.gene[weekend2*WEEK+off] = aux;
+   }
+}		/* -----  end of function exch_weekend  ----- */
