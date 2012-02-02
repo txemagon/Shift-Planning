@@ -101,7 +101,7 @@ struct Summary
 {
   unsigned extra_staff_number;
   unsigned defect_staff_number;
-  unsigned long *extra_shifts;	/* Separate penalties by worker */
+  unsigned long long *extra_shifts;	/* Separate penalties by worker */
   unsigned *weekends_halved;
   unsigned *consecutive_weekends;
   unsigned *weekends;		/* Amount of free weekends */

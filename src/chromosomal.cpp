@@ -78,7 +78,7 @@ display_long_shifts (Chromosome chromo, unsigned worker)
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  display_summaries()
- *  Description:  
+ *  Description:  Display several summaries
  * =====================================================================================
  */
 void
@@ -95,7 +95,7 @@ display_summaries (Chromosome chromo)
     {
       printf ("\nWorker %2u\n", worker + 1);
       printf ("---------\n");
-      printf ("Extra shifts: %lu\n%s\n", chromo.summary.extra_shifts[worker],
+      printf ("Extra shifts: %llu\n%s\n", chromo.summary.extra_shifts[worker],
 	      display_amounts (translation,
 			       chromo.summary.extra_shifts[worker],
 			       get_shift_base (chromo)));
@@ -191,9 +191,8 @@ init_chromosome (unsigned workers, unsigned period)
   chromo.length = period;
   chromo.width = workers;
   chromo.penalty_sum = 0;
-  printf ("Reserva en %p\n",
 	  chromo.summary.extra_shifts =
-	  (unsigned long *) malloc (workers * sizeof (unsigned long)));
+	  (unsigned long long *) malloc (workers * sizeof (unsigned long long));
   chromo.summary.weekends_halved =
     (unsigned *) malloc (workers * sizeof (unsigned));
   chromo.summary.consecutive_weekends =
@@ -250,8 +249,6 @@ deallocate_pop (Population population)
 {
   for (unsigned i = 0; i < population.length; i++)
     {				/* Remove population */
-      printf ("Freeing %u in %p \n", i,
-	      population.person[i].summary.extra_shifts);
       free (population.person[i].summary.extra_shifts);
       free (population.person[i].summary.weekends_halved);
       free (population.person[i].summary.consecutive_weekends);
@@ -300,7 +297,7 @@ copy (Population population, unsigned dest, unsigned src)
       population.person[dest].length = population.person[src].length;
       population.person[dest].penalty_sum =
 	population.person[src].penalty_sum;
-      population.person[dest].summary = population.person[src].summary;
+      // todo: copy summaries also if evaluation needed.
       memcpy (population.person[dest].gene, population.person[src].gene,
 	      population.person[src].length);
     }
